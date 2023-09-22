@@ -1,13 +1,13 @@
 <!-- Model Type Field -->
 <div class="form-group">
-    {!! Form::label('model_type', 'Model Type:') !!}
+    {!! Form::label('model_type', 'Type de Model:') !!}
     <p>{{ config('settings_array.model_types_plural')[$customField->model_type] }}</p>
 </div>
 
 
 <!-- Name Field -->
 <div class="form-group">
-    {!! Form::label('name', 'Name:') !!}
+    {!! Form::label('name', 'Nom:') !!}
     <p>{{ $customField->name }}</p>
 </div>
 
@@ -20,7 +20,7 @@
 
 {{--suggestions--}}
 <div class="form-group">
-    {!! Form::label('suggestions', 'Suggestions List:') !!}
+    {!! Form::label('suggestions', 'Liste de suggestions:') !!}
     <p>
         @php
             $suggestions = isset($customField)&&!empty($customField->suggestions) ? $customField->suggestions :[];
@@ -36,14 +36,14 @@
 
 <!-- Created At Field -->
 <div class="form-group">
-    {!! Form::label('created_at', 'Created At:') !!}
+    {!! Form::label('created_at', 'Créé par:') !!}
     <p>{{ formatDateTime($customField->created_at) }}</p>
 </div>
 
 
 <!-- Updated At Field -->
 <div class="form-group">
-    {!! Form::label('updated_at', 'Updated At:') !!}
+    {!! Form::label('updated_at', 'Mis à jour à:') !!}
     <p>{{ formatDateTime($customField->updated_at) }}</p>
 </div>
 

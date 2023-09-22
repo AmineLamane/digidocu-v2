@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title',ucfirst(config('settings.document_label_plural'))." List")
+@section('title',ucfirst(config('settings.document_label_plural')))
 @section('css')
     <style type="text/css">
         .bg-folder-shaper {
@@ -71,7 +71,7 @@
                 <a href="{{route('documents.create')}}"
                    class="btn btn-primary">
                     <i class="fa fa-plus"></i>
-                    Add New
+                    Nouveau Dossier
                 </a>
             @endcan
         </h1>
@@ -91,13 +91,13 @@
                 </div>
                 {!! Form::model(request()->all(), ['method'=>'get','class'=>'form-inline visible hidden-xs','id'=>'filterForm']) !!}
                 <div class="form-group">
-                    <label for="search" class="sr-only">Search</label>
-                    {!! Form::text('search',null,['class'=>'form-control input-sm','placeholder'=>'Search...']) !!}
+                    <label for="search" class="sr-only">Rechercher</label>
+                    {!! Form::text('search',null,['class'=>'form-control input-sm','placeholder'=>'Rechercher...']) !!}
                 </div>
                 <div class="form-group">
-                    <label for="tags" class="sr-only">{{config('settings.tags_label_singular')}}:</label>
+                    <label for="tags" class="sr-only">{{ucfirst(config('settings.tags_label_plural'))}}:</label>
                     <select class="form-control select2 input-sm" name="tags[]" id="tags"
-                            data-placeholder="Choose {{config('settings.tags_label_singular')}}" multiple>
+                            data-placeholder="Choisir les {{config('settings.tags_label_plural')}}" multiple>
                         @foreach($tags as $tag)
                             @canany(['read documents','read documents in tag '.$tag->id])
                                 <option
@@ -106,11 +106,11 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label for="status" class="sr-only">{{config('settings.tags_label_singular')}}:</label>
-                    {!! Form::select('status',['0'=>"ALL",config('constants.STATUS.PENDING')=>config('constants.STATUS.PENDING'),config('constants.STATUS.APPROVED')=>config('constants.STATUS.APPROVED'),config('constants.STATUS.REJECT')=>config('constants.STATUS.REJECT')],null,['class'=>'form-control input-sm']) !!}
-                </div>
-                <button type="submit" class="btn btn-default btn-sm"><i class="fa fa-filter"></i> Filter</button>
+                    {!! Form::select('status',['0'=>"Tout",config('constants.STATUS.PENDING')=>config('constants.STATUS.PENDING'),config('constants.STATUS.APPROVED')=>config('constants.STATUS.APPROVED'),config('constants.STATUS.REJECT')=>config('constants.STATUS.REJECT')],null,['class'=>'form-control input-sm']) !!}
+                </div> -->
+                <button type="submit" class="btn btn-default btn-sm"><i class="fa fa-filter"></i> Filtrer</button>
                 {!! Form::close() !!}
             </div>
             <div class="box-body">
@@ -137,16 +137,16 @@
                                                     <span class="sr-only">Toggle Dropdown</span>
                                                 </button>
                                                 <ul class="dropdown-menu dropdown-menu-left" role="menu">
-                                                    <li><a href="{{route('documents.show',$document->id)}}">Show</a>
+                                                    <li><a href="{{route('documents.show',$document->id)}}">Consulter</a>
                                                     </li>
                                                     @can('edit',$document)
-                                                        <li><a href="{{route('documents.edit',$document->id)}}">Edit</a>
+                                                        <li><a href="{{route('documents.edit',$document->id)}}">Editer</a>
                                                         </li>
                                                     @endcan
                                                     @can('delete',$document)
                                                         <li>
                                                             {!! Form::open(['route' => ['documents.destroy', $document->id], 'method' => 'delete']) !!}
-                                                            {!! Form::button('Delete', [
+                                                            {!! Form::button('Supprimer', [
                                                                         'type' => 'submit',
                                                                         'class' => 'btn btn-link',
                                                                         'onclick' => "return conformDel(this,event)"
@@ -171,10 +171,11 @@
                                             data-toggle="tooltip">{{$document->name}}</h5>
                                         <h5 class="widget-user-desc" style="font-size: 12px"><span data-toggle="tooltip"
                                                                                                    title="{{formatDateTime($document->updated_at)}}">{{formatDate($document->updated_at)}}</span>
-                                            <span
+                                            <!-- <span
                                                 class="pull-right" style="margin-right: 15px;">
-                                            {!! $document->isVerified ? '<i title="Verified" data-toggle="tooltip" class="fa fa-check-circle" style="color: #388E3C;"></i>':'<i title="Unverified" data-toggle="tooltip" class="fa fa-remove" style="color: #f44336;"></i>' !!}
-                                        </span></h5>
+                                            {!! $document->isVerified ? '<i title="Vérifié" data-toggle="tooltip" class="fa fa-check-circle" style="color: #388E3C;"></i>':'<i title="Non Vérifié" data-toggle="tooltip" class="fa fa-remove" style="color: #f44336;"></i>' !!}
+                                        </span> -->
+                                    </h5>
                                     </a>
                                 </div>
                             </div>

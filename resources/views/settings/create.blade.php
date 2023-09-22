@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('title','Settings')
+@section('title','Création de paramètre')
 @section('content')
     <section class="content-header">
         <h1>
-            Setting
+            Paramètre
         </h1>
     </section>
     <div class="content">

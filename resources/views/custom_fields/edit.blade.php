@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('title','Edit Custom Field')
+@section('title','Modification de Champ Personnalisé')
 @section('content')
     <section class="content-header">
         <h1>
-            Custom Field
+            Champ Personnalisé
         </h1>
    </section>
    <div class="content">

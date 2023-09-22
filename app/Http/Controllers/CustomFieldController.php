@@ -59,7 +59,7 @@ class CustomFieldController extends AppBaseController
 
         $customField = $this->customFieldRepository->create($input);
 
-        Flash::success('Custom Field saved successfully.');
+        Flash::success('Champ personnalisé sauvegardé avec succès.');
 
         return redirect(route('customFields.index'));
     }
@@ -77,7 +77,7 @@ class CustomFieldController extends AppBaseController
         $customField = $this->customFieldRepository->find($id);
 
         if (empty($customField)) {
-            Flash::error('Custom Field not found');
+            Flash::error('Champ personnalisé non trouvé');
 
             return redirect(route('customFields.index'));
         }
@@ -98,7 +98,7 @@ class CustomFieldController extends AppBaseController
         $customField = $this->customFieldRepository->find($id);
 
         if (empty($customField)) {
-            Flash::error('Custom Field not found');
+            Flash::error('Champ personnalisé non trouvé');
 
             return redirect(route('customFields.index'));
         }
@@ -120,7 +120,7 @@ class CustomFieldController extends AppBaseController
         $customField = $this->customFieldRepository->find($id);
 
         if (empty($customField)) {
-            Flash::error('Custom Field not found');
+            Flash::error('Champ personnalisé non trouvée');
 
             return redirect(route('customFields.index'));
         }
@@ -129,7 +129,7 @@ class CustomFieldController extends AppBaseController
         $input['suggestions'] = explode(",", $input['suggestions']);
         $customField = $this->customFieldRepository->update($input, $id);
 
-        Flash::success('Custom Field updated successfully.');
+        Flash::success('Champ personnalisé mis à jour avec succès.');
 
         return redirect(route('customFields.index'));
     }
@@ -147,14 +147,14 @@ class CustomFieldController extends AppBaseController
         $customField = $this->customFieldRepository->find($id);
 
         if (empty($customField)) {
-            Flash::error('Custom Field not found');
+            Flash::error('Champ personnalisé non trouvé');
 
             return redirect(route('customFields.index'));
         }
 
         $this->customFieldRepository->delete($id);
 
-        Flash::success('Custom Field deleted successfully.');
+        Flash::success('Champ personnalisé mis à jour avec succès.');
 
         return redirect(route('customFields.index'));
     }

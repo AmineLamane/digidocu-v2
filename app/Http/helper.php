@@ -22,7 +22,7 @@ function formatDate($date, $format = "d/m/Y")
  * @param string $format default= 'd/m/Y h:i A'
  * @return false|string
  */
-function formatDateTime($dateTime, $format = "d/m/Y h:i A")
+function formatDateTime($dateTime, $format = "d/m/Y H:i")
 {
     if (is_null($dateTime)) {
         return '-';
@@ -36,7 +36,7 @@ function formatDateTime($dateTime, $format = "d/m/Y h:i A")
  * @param string $format default= 'h:i A'
  * @return false|string
  */
-function formatTime($time, $format = "h:i A")
+function formatTime($time, $format = "H:i")
 {
     if (is_null($time)) {
         return '-';

@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('title','Edit User')
+@section('title','Modification d\'utilisateur')
 @section('content')
     <section class="content-header">
         <h1>
-            User
+            Utilisateur
         </h1>
     </section>
     <div class="content">

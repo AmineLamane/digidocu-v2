@@ -1,6 +1,6 @@
 <!-- Name Field -->
 <div class="form-group col-sm-6 {{ $errors->has('name') ? 'has-error' :'' }}">
-    {!! Form::label('name', 'Name:') !!}
+    {!! Form::label('name', 'Nom:') !!}
     {!! Form::text('name', null, ['class' => 'form-control']) !!}
     {!! $errors->first('name','<span class="help-block">:message</span>') !!}
 </div>
@@ -8,7 +8,7 @@
 
 <!-- Color Field -->
 <div class="form-group col-sm-6 {{ $errors->has('color') ? 'has-error' :'' }}">
-    {!! Form::label('color', 'Color:') !!}
+    {!! Form::label('color', 'Couleur:') !!}
     {!! Form::color('color', null, ['class' => 'form-control']) !!}
     {!! $errors->first('color','<span class="help-block">:message</span>') !!}
 </div>
@@ -24,6 +24,6 @@
 
 <!-- Submit Field -->
 <div class="form-group col-sm-12">
-    {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
-    <a href="{!! route('tags.index') !!}" class="btn btn-default">Cancel</a>
+    {!! Form::submit('Enregistrer', ['class' => 'btn btn-primary']) !!}
+    <a href="{!! route('tags.index') !!}" class="btn btn-default">Annuler</a>
 </div>

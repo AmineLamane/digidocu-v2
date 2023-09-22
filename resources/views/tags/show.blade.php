@@ -1,20 +1,20 @@
 @extends('layouts.app')
-@section('title','Show '.ucfirst(config('settings.tags_label_singular')))
+@section('title','Détail du '.ucfirst(config('settings.tags_label_singular')))
 @section('content')
     <section class="content-header">
         <h1>
             {{ucfirst(config('settings.tags_label_singular'))}}
             <span class="pull-right">
             <a href="{{ route('tags.index') }}" class="btn btn-default">
-                <i class="fa fa-chevron-left" aria-hidden="true"></i> Back
+                <i class="fa fa-chevron-left" aria-hidden="true"></i> Retour
             </a>
             <a href="{{ route('tags.edit',$tag->id) }}" class="btn btn-primary">
-                <i class="fa fa-edit" aria-hidden="true"></i> Edit
+                <i class="fa fa-edit" aria-hidden="true"></i> Editer
             </a>
             {!! Form::open(['route' => ['tags.destroy', $tag->id], 'method' => 'delete','style'=>'display:inline']) !!}
-                {!! Form::button('<i class="fa fa-trash"></i> Delete', [
+                {!! Form::button('<i class="fa fa-trash"></i> Supprimer', [
                 'type' => 'submit',
-                'title' => 'Delete',
+                'title' => 'Supprimer',
                 'class' => 'btn btn-danger',
                 'onclick' => "return conformDel(this,event)",
                 ]) !!}
@@ -44,17 +44,17 @@
                             <table class="table">
                                 <thead>
                                 <tr>
-                                    <th colspan="3" style="font-size: 1.8rem;">{{ucfirst(config('settings.document_label_plural'))}} permissions in this {{config('settings.tags_label_singular')}}</th>
+                                    <th colspan="3" style="font-size: 1.8rem;">Permissions aux {{ucfirst(config('settings.document_label_plural'))}} de ce {{config('settings.tags_label_singular')}}</th>
                                 </tr>
                                 <tr>
-                                    <th>User</th>
+                                    <th>Utilisateur</th>
                                     <th>Permissions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @if (count($tagWisePermList)==0)
                                     <tr>
-                                        <td colspan="3">No record found</td>
+                                        <td colspan="3">Aucun résultat trouvé</td>
                                     </tr>
                                 @endif
                                 @foreach ($tagWisePermList as $perm)
@@ -62,7 +62,22 @@
                                         <td>{{$perm['user']->name}}</td>
                                         <td>
                                             @foreach ($perm['permissions'] as $p)
-                                                <label class="label label-default">{{$p}}</label>
+                                                <label class="label label-default">
+                                                    <!-- {{$p}} -->
+                                                    @if($p == 'create')
+                                                        créer
+                                                    @endif
+                                                    @if($p == 'read')
+                                                        consulter
+                                                    @endif
+                                                    
+                                                    @if($p == 'update')
+                                                        modifier
+                                                    @endif
+                                                    @if($p == 'delete')
+                                                        supprimer
+                                                    @endif
+                                                </label>
                                             @endforeach
                                         </td>
                                     </tr>
@@ -72,17 +87,17 @@
                             <table class="table">
                                 <thead>
                                 <tr>
-                                    <th colspan="3" style="font-size: 1.8rem;">Permission inherited from global {{config('settings.document_label_plural')}}</th>
+                                    <th colspan="3" style="font-size: 1.8rem;">Permission héritée des {{config('settings.document_label_plural')}} globaux</th>
                                 </tr>
                                 <tr>
-                                    <th>User</th>
+                                    <th>Utilisateur</th>
                                     <th>Permissions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @if (count($globalPermissionUsers)==0)
                                     <tr>
-                                        <td colspan="2">No record found</td>
+                                        <td colspan="2">Aucun résultat trouvé</td>
                                     </tr>
                                 @endif
                                 @foreach ($globalPermissionUsers as $user)

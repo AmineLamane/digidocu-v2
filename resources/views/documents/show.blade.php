@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title',"Show ".ucfirst(config('settings.document_label_singular')))
+@section('title',"Détail du ".ucfirst(config('settings.document_label_singular')))
 @section('css')
     <style>
         .box.custom-box {
@@ -59,21 +59,21 @@
                             <div class="form-group">
                                 <a href="{{\Illuminate\Support\Str::finish(route('files.showfile',['dir'=>'original']),"/")}}@{{file}}?force=true"
                                    download class="btn btn-primary"><i
-                                        class="fa fa-download"></i> Download original
+                                        class="fa fa-download"></i> Télécharger l'original
                                 </a>
                             </div>
                             <div class="form-group">
-                                <label>{{ucfirst(config('settings.file_label_singular'))." Type"}}</label>
+                                <label>{{"Type du ".ucfirst(config('settings.file_label_singular'))}}</label>
                                 <p>@{{file_type.name}}</p>
                             </div>
                             <div class="form-group">
-                                <label>Uploaded By:</label>
+                                <label>Téléchargé par:</label>
                                 <p>
                                     @{{created_by.name}}
                                 </p>
                             </div>
                             <div class="form-group">
-                                <label>Uploaded On:</label>
+                                <label>Téléchargé à:</label>
                                 <p>@{{formatDate created_at}}</p>
                             </div>
                             @{{#each custom_fields}}
@@ -94,7 +94,7 @@
                     <div class="clearfix"></div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-close"></i>
-                            Close
+                            Fermer
                         </button>
                     </div>
                 </div>
@@ -145,32 +145,32 @@
         <h1 class="pull-right" style="margin-bottom: 5px;">
             <div class="dropdown" style="display: inline-block">
                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i
-                        class="fa fa-download"></i> Download Zip
+                        class="fa fa-download"></i> Télécharger Zip
                     <span class="caret"></span></button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="{{route('files.downloadZip',['dir'=>'all','id'=>$document->id])}}">All</a>
+                        <a href="{{route('files.downloadZip',['dir'=>'all','id'=>$document->id])}}">Tout</a>
                     </li>
                     <li>
-                        <a href="{{route('files.downloadZip',['dir'=>'original','id'=>$document->id])}}">Original</a>
+                        <a href="{{route('files.downloadZip',['dir'=>'original','id'=>$document->id])}}">Original Seulement</a>
                     </li>
                     @foreach (explode(",",config('settings.image_files_resize')) as $varient)
                         <li>
                             <a href="{{route('files.downloadZip',['dir'=>$varient,'id'=>$document->id])}}">{{$varient}}w
-                                (Images Only)</a>
+                                (Images Seulement)</a>
                         </li>
                     @endforeach
                 </ul>
             </div>
             @can('edit', $document)
                 <a href="{{route('documents.edit', $document->id)}}" class="btn btn-primary"><i class="fa fa-edit"></i>
-                    Edit</a>
+                    Editer</a>
             @endcan
             @can('delete', $document)
                 {!! Form::open(['route' => ['documents.destroy', $document->id], 'method' => 'delete', 'style'=>'display:inline;']) !!}
                 <button class="btn btn-danger" onclick="conformDel(this,event)" type="submit"><i
                         class="fa fa-trash"></i>
-                    Delete
+                    Supprimer
                 </button>
                 {!! Form::close() !!}
             @endcan
@@ -187,7 +187,7 @@
                 <div class="box box-primary">
                     <div class="box-body">
                         <div class="form-group">
-                            <label>{{ucfirst(config('settings.document_label_singular'))}} Name:</label>
+                            <label>Nom du {{ucfirst(config('settings.document_label_singular'))}}:</label>
                             <p>{{$document->name}}</p>
                         </div>
                         <div class="form-group">
@@ -209,8 +209,8 @@
                             <label>Description:</label>
                             <p>{!! $document->description !!}</p>
                         </div>
-                        <div class="form-group">
-                            <label>Status:</label>
+                        <!-- <div class="form-group">
+                            <label>Statut:</label>
                             @if ($document->status==config('constants.STATUS.PENDING'))
                                 <span class="label label-warning">{{$document->status}}</span>
                             @elseif($document->status==config('constants.STATUS.APPROVED'))
@@ -218,22 +218,22 @@
                             @else
                                 <span class="label label-danger">{{$document->status}}</span>
                             @endif
-                        </div>
+                        </div> -->
                         <div class="form-group">
-                            <label>Created By:</label> {{$document->createdBy->name}}
+                            <label>Créé par:</label> {{$document->createdBy->name}}
                         </div>
-                        <div class="form-group">
-                            <label>Created At:</label>
+                        <!-- <div class="form-group">
+                            <label>Créé à:</label>
                             <p>{!! formatDateTime($document->created_at) !!} <br>
-                                ({{\Carbon\Carbon::parse($document->created_at)->diffForHumans()}})
+                                ({{\Carbon\Carbon::parse($document->created_at)->locale('fr')->diffForHumans()}})
                             </p>
                         </div>
                         <div class="form-group">
-                            <label>Last Updated:</label>
+                            <label>Mis à jour à:</label>
                             <p>{!! formatDateTime($document->updated_at) !!} <br>
-                                ({{\Carbon\Carbon::parse($document->updated_at)->diffForHumans()}})
+                                ({{\Carbon\Carbon::parse($document->updated_at)->locale('fr')->diffForHumans()}})
                             </p>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -243,14 +243,14 @@
                         <li class="active"><a href="#tab_files" data-toggle="tab"
                                               aria-expanded="true">{{ucfirst(config('settings.file_label_plural'))}}</a>
                         </li>
-                        @can('verify', $document)
+                        <!-- @can('verify', $document)
                             <li class=""><a href="#tab_verification" data-toggle="tab"
                                             aria-expanded="false">Verification</a></li>
-                        @endcan
-                        <li class=""><a href="#tab_activity" data-toggle="tab" aria-expanded="false">Activity</a></li>
+                        @endcan -->
+                        <li class=""><a href="#tab_activity" data-toggle="tab" aria-expanded="false">Activités</a></li>
                         @can('user manage permission')
                             <li class=""><a href="#tab_permissions" data-toggle="tab"
-                                            aria-expanded="false">Permission</a>
+                                            aria-expanded="false">Permissions</a>
                             </li>
                         @endcan
                     </ul>
@@ -261,8 +261,7 @@
                                     <button class="close" data-dismiss="alert" aria-label="close" title="close">
                                         &times;
                                     </button>
-                                    <strong>The Following {{ucfirst(config('settings.file_label_plural'))}} Are
-                                        Missing:</strong>
+                                    <strong>Ces {{ucfirst(config('settings.file_label_plural'))}} sont manquants:</strong>
                                     <ul style="padding-inline-start: 20px;">
                                         @foreach ($missigDocMsgs as $msg)
                                             <li>{{$msg}}</li>
@@ -292,8 +291,8 @@
                                                           onclick="showFileModal({{json_encode($file)}})">{{$file->name}}</span>
                                                     <small class="description text-gray"><b
                                                             title="{{formatDateTime($file->created_at)}}"
-                                                            data-toggle="tooltip">{{\Carbon\Carbon::parse($file->created_at)->diffForHumans()}}</b>
-                                                        by <b>{{$file->createdBy->name}}</b></small>
+                                                            data-toggle="tooltip">{{\Carbon\Carbon::parse($file->created_at)->locale('fr')->diffForHumans()}}</b>
+                                                        par <b>{{$file->createdBy->name}}</b></small>
                                                 </div>
                                                 <div class="pull-right box-tools">
                                                     <button type="button"
@@ -305,23 +304,21 @@
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu">
                                                         <li><a href="javascript:void(0);"
-                                                               onclick="showFileModal({{json_encode($file)}})">Show
-                                                                Detail</a></li>
+                                                               onclick="showFileModal({{json_encode($file)}})">Voir le détail</a></li>
                                                         <li>
                                                             <a href="{{route('files.showfile',['dir'=>'original','file'=>$file->file])}}?force=true"
-                                                               download>Download
-                                                                original</a>
+                                                               download>Télécharger l'original</a>
                                                         </li>
                                                         @if (checkIsFileIsImage($file->file))
                                                             @foreach (explode(",",config('settings.image_files_resize')) as $varient)
                                                                 <li>
                                                                     <a href="{{route('files.showfile',['dir'=>$varient,'file'=>$file->file])}}?force=true"
-                                                                       download>Download {{$varient}}w</a></li>
+                                                                       download>Télécharger {{$varient}}w</a></li>
                                                             @endforeach
                                                             <li>
                                                                 <a href="javascript:void(0)"
                                                                    onclick="javascript:ImageEditor.open('{{route('files.showfile',['dir'=>'original','file'=>$file->file])}}')">
-                                                                    Edit Image
+                                                                    Editer l'image
                                                                 </a>
                                                             </li>
                                                         @endif
@@ -329,7 +326,7 @@
                                                             {!! Form::open(['route' => ['documents.files.destroy', $file->id], 'method' => 'delete', 'style'=>'display:inline;']) !!}
                                                             <button class="btn btn-link"
                                                                     onclick="conformDel(this,event)" type="submit">
-                                                                Delete
+                                                                Supprimer
                                                             </button>
                                                             {!! Form::close() !!}
                                                         </li>
@@ -343,40 +340,40 @@
                             @can('update', [$document, $document->tags->pluck('id')])
                                 <a href="{{route('documents.files.create',$document->id)}}"
                                    class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>
-                                    Add {{ucfirst(config('settings.file_label_plural'))}}</a>
+                                    Ajouter des {{ucfirst(config('settings.file_label_plural'))}}</a>
                             @endcan
                         </div>
-                        @can('verify', $document)
+                        <!-- @can('verify', $document)
                             <div class="tab-pane" id="tab_verification">
                                 @if ($document->status!=config('constants.STATUS.APPROVED'))
                                     {!! Form::open(['route' => ['documents.verify', $document->id], 'method' => 'post']) !!}
                                     <div class="form-group text-center">
                                     <textarea class="form-control" name="vcomment" id="vcomment" rows="4"
-                                              placeholder="Enter Comment to verify with comment(optional)"></textarea>
+                                              placeholder="Saisissez un commentaire pour vérification avec commentaire (facultatif)"></textarea>
                                     </div>
                                     <div class="form-group text-center">
                                         <button class="btn btn-success" type="submit" name="action" value="approve"><i
-                                                class="fa fa-check"></i> Approve
+                                                class="fa fa-check"></i> Approuver
                                         </button>
                                         <button class="btn btn-danger" type="submit" name="action" value="reject"><i
-                                                class="fa fa-close"></i> Reject
+                                                class="fa fa-close"></i> Rejeter
                                         </button>
                                     </div>
                                     {!! Form::close() !!}
                                 @else
                                     <div class="form-group">
-                                        <span class="label label-success">Verified</span>
+                                        <span class="label label-success">Verifié</span>
                                     </div>
                                     <div class="form-group">
-                                        Verifier: <b>{{$document->verifiedBy->name}}</b>
+                                        Verifié par: <b>{{$document->verifiedBy->name}}</b>
                                     </div>
                                     <div class="form-gorup">
-                                        Verified At: <b>{{formatDateTime($document->verified_at)}}</b>
-                                        ({{\Carbon\Carbon::parse($document->verified_at)->diffForHumans()}})
+                                        Verifié à: <b>{{formatDateTime($document->verified_at)}}</b>
+                                        ({{\Carbon\Carbon::parse($document->verified_at)->locale('fr')->diffForHumans()}})
                                     </div>
                                 @endif
                             </div>
-                        @endcan
+                        @endcan -->
                         <div class="tab-pane" id="tab_activity">
                             <ul class="timeline">
                                 <li class="time-label">
@@ -390,7 +387,7 @@
                                         <div class="timeline-item">
                                             <span class="time" data-toggle="tooltip"
                                                   title="{{formatDateTime($activity->created_at)}}"><i
-                                                    class="fa fa-clock-o"></i> {{\Carbon\Carbon::parse($activity->created_at)->diffForHumans()}}</span>
+                                                    class="fa fa-clock-o"></i> {{\Carbon\Carbon::parse($activity->created_at)->locale('fr')->diffForHumans()}}</span>
 
                                             <h4 class="timeline-header no-border">{!! $activity->activity !!}</h4>
                                         </div>
@@ -412,13 +409,13 @@
                                                     <button type="button" class="close" data-dismiss="modal"
                                                             aria-label="Close">
                                                         <span aria-hidden="true">&times;</span></button>
-                                                    <h4 class="modal-title">Give Permission</h4>
+                                                    <h4 class="modal-title">Donner permission</h4>
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="row">
                                                         <div class="col-sm-12">
                                                             <select class="form-control" name="user_id" required>
-                                                                <option value="">- Select User -</option>
+                                                                <option value="">- Sélectionner l'utilisateur -</option>
                                                                 @foreach($users as $usr)
                                                                     <option value="{{$usr->id}}">{{$usr->name}}({{$usr->username}})</option>
                                                                 @endforeach
@@ -430,7 +427,7 @@
                                                                     <input name="document_permissions[{{$perm}}]"
                                                                            type="checkbox" class="iCheck-helper"
                                                                            value="1"> {{ucfirst($perm)}}
-                                                                    this {{config('settings.document_label_singular')}}
+                                                                    Ce {{config('settings.document_label_singular')}}
                                                                 </label>
                                                             </div>
                                                         @endforeach
@@ -438,9 +435,9 @@
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-default pull-left"
-                                                            data-dismiss="modal">Close
+                                                            data-dismiss="modal">Fermer
                                                     </button>
-                                                    <button type="submit" class="btn btn-primary">Save Permission</button>
+                                                    <button type="submit" class="btn btn-primary">Sauvegarder la permission</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -450,15 +447,15 @@
                                         <thead>
                                         <tr>
                                             <th colspan="3" style="font-size: 1.8rem;">
-                                                Direct Permissions
+                                                Permissions directes à ce dossier spécifique
                                                 <button type="button" class="btn btn-primary btn-xs pull-right" data-toggle="modal"
                                                         data-target="#modal-permission">
-                                                    <i class="fa fa-plus"></i> New Permission
+                                                    <i class="fa fa-plus"></i> Nouvelle Permission
                                                 </button>
                                             </th>
                                         </tr>
                                         <tr>
-                                            <th>User</th>
+                                            <th>Utilisateur</th>
                                             <th>Permissions</th>
                                             <th></th>
                                         </tr>
@@ -466,7 +463,7 @@
                                         <tbody>
                                         @if (count($thisDocPermissionUsers)==0)
                                             <tr>
-                                                <td colspan="2">No record found</td>
+                                                <td colspan="2">Aucun résultat trouvé</td>
                                             </tr>
                                         @endif
                                         @foreach($thisDocPermissionUsers as $perm)
@@ -492,19 +489,19 @@
                                     <table class="table">
                                         <thead>
                                         <tr>
-                                            <th colspan="3" style="font-size: 1.8rem;">Permissions inherited
-                                                by {{config('settings.tags_label_plural')}}</th>
+                                            <th colspan="3" style="font-size: 1.8rem;">Permissions héritées
+                                                par {{config('settings.tags_label_plural')}}</th>
                                         </tr>
                                         <tr>
                                             <th>{{ucfirst(config('settings.tags_label_singular'))}}</th>
-                                            <th>User</th>
+                                            <th>Utilisateur</th>
                                             <th>Permissions</th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         @if (count($tagWisePermList)==0)
                                             <tr>
-                                                <td colspan="3">No record found</td>
+                                                <td colspan="3">Aucun résultat trouvé</td>
                                             </tr>
                                         @endif
                                         @foreach ($tagWisePermList as $perm)
@@ -513,7 +510,22 @@
                                                 <td>{{$perm['user']->name}}</td>
                                                 <td>
                                                     @foreach ($perm['permissions'] as $p)
-                                                        <label class="label label-default">{{$p}}</label>
+                                                        <label class="label label-default">
+                                                            <!-- {{$p}} -->
+                                                            @if($p == 'create')
+                                                            créer
+                                                            @endif
+                                                            @if($p == 'read')
+                                                                consulter
+                                                            @endif
+                                                            
+                                                            @if($p == 'update')
+                                                                modifier
+                                                            @endif
+                                                            @if($p == 'delete')
+                                                                supprimer
+                                                            @endif
+                                                        </label>
                                                     @endforeach
                                                 </td>
                                             </tr>
@@ -523,17 +535,17 @@
                                     <table class="table">
                                         <thead>
                                         <tr>
-                                            <th colspan="3" style="font-size: 1.8rem;">Global Permission of {{config('settings.document_label_plural')}}</th>
+                                            <th colspan="3" style="font-size: 1.8rem;">Permissions globales de {{config('settings.document_label_plural')}}</th>
                                         </tr>
                                         <tr>
-                                            <th>User</th>
+                                            <th>Utilisateur</th>
                                             <th>Permissions</th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         @if (count($globalPermissionUsers)==0)
                                             <tr>
-                                                <td colspan="2">No record found</td>
+                                                <td colspan="2">Aucun résultat trouvé</td>
                                             </tr>
                                         @endif
                                         @foreach ($globalPermissionUsers as $perm)

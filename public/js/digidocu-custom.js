@@ -29,8 +29,8 @@ function registerTypeahead() {
 function conformDel(aa, event) {
     event.preventDefault();
     swal({
-        title: "Are you sure?",
-        text: "Once you click, Action can't be undo!",
+        title: "Êtes-vous sûr?",
+        text: "Une fois vous cliquez, l'action est irréversible!",
         icon: "error",
         buttons: true,
         dangerMode: true,

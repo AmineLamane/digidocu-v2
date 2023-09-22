@@ -11,7 +11,10 @@
 |
 */
 
+
 Route::get('/', 'HomeController@welcome')->name('home');
+Route::redirect('/', '/login');
+Route::redirect('/home', '/login');
 
 Route::get('config', function () {
     Artisan::call('route:clear');

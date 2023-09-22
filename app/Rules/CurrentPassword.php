@@ -44,6 +44,6 @@ class CurrentPassword implements Rule
      */
     public function message()
     {
-        return 'The :attribute is invalid';
+        return 'Le champ :attribute est invalide';
     }
 }

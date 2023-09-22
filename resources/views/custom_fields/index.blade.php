@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title','List Custom Fields')
+@section('title','Liste des Champs Personnalisés')
 @section('content')
     <section class="content-header">
-        <h1 class="pull-left">Custom Fields</h1>
+        <h1 class="pull-left">Champs Personnalisés</h1>
         <h1 class="pull-right">
            <a class="btn btn-primary pull-right" style="margin-top: -10px;margin-bottom: 5px" href="{!! route('customFields.create') !!}">
                <i class="fa fa-plus"></i>
-               Add New
+               Ajouter nouveau
            </a>
 
         </h1>

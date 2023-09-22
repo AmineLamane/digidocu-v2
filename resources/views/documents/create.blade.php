@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title',"Add ".ucfirst(config('settings.document_label_singular')))
+@section('title',"Création de ".ucfirst(config('settings.document_label_singular')))
 @section('content')
     <section class="content-header">
         <h1>

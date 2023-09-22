@@ -61,7 +61,7 @@ class SettingController extends AppBaseController
 
         $setting = $this->settingRepository->create($input);
 
-        Flash::success('Setting saved successfully.');
+        Flash::success('Paramètre sauvegardé avec succès.');
 
         return redirect(route('settings.index'));
     }
@@ -79,7 +79,7 @@ class SettingController extends AppBaseController
         $setting = $this->settingRepository->find($id);
 
         if (empty($setting)) {
-            Flash::error('Setting not found');
+            Flash::error('Paramètre non trouvée');
 
             return redirect(route('settings.index'));
         }
@@ -100,7 +100,7 @@ class SettingController extends AppBaseController
         $setting = $this->settingRepository->find($id);
 
         if (empty($setting)) {
-            Flash::error('Setting not found');
+            Flash::error('Paramètre avec succès');
 
             return redirect(route('settings.index'));
         }
@@ -122,7 +122,7 @@ class SettingController extends AppBaseController
         $setting = $this->settingRepository->find($id);
 
         if (empty($setting)) {
-            Flash::error('Setting not found');
+            Flash::error('Paramètre non trouvé');
 
             return redirect(route('settings.index'));
         }
@@ -132,7 +132,7 @@ class SettingController extends AppBaseController
             Arr::forget($data, ['name']);
         $setting = $this->settingRepository->update($data, $id);
 
-        Flash::success('Setting updated successfully.');
+        Flash::success('Paramètre mis à jour avec succès.');
 
         return redirect(route('settings.index'));
     }
@@ -150,14 +150,14 @@ class SettingController extends AppBaseController
         $setting = $this->settingRepository->find($id);
 
         if (empty($setting)) {
-            Flash::error('Setting not found');
+            Flash::error('Paramètre non trouvé');
 
             return redirect(route('settings.index'));
         }
 
         $this->settingRepository->delete($id);
 
-        Flash::success('Setting deleted successfully.');
+        Flash::success('Paramètre supprimé avec succès.');
 
         return redirect(route('settings.index'));
     }

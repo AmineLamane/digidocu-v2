@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('title','Show Custom Field')
+@section('title','Détail de Champ Personnalisé')
 @section('content')
     <section class="content-header">
         <h1>
-            Custom Field
+            Champ personnalisé
             <span class="pull-right">
                 <a href="{{ route('customFields.index') }}" class="btn btn-default">
                     <i class="fa fa-chevron-left" aria-hidden="true"></i> Back

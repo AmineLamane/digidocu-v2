@@ -1,32 +1,32 @@
 <?php
 return [
     'STATUS' => [
-        "PENDING" => 'PENDING',
+        "PENDING" => 'En cours',
         "ACTIVE" => 'ACTIVE',
         "BLOCK" => 'BLOCK',
-        "REJECT" => 'REJECT',
-        "APPROVED" => 'APPROVED',
+        "REJECT" => 'Rejeté',
+        "APPROVED" => 'Vérifié',
     ],
     'GLOBAL_PERMISSIONS' => [ //permission is = permission=>label of permission
         'USERS' => [
-            'create users' => 'create',
-            'read users' => 'read',
-            'update users' => 'update',
-            'delete users' => 'delete',
-            'user manage permission' => 'permission management',
+            'create users' => 'créer',
+            'read users' => 'consulter',
+            'update users' => 'modifier',
+            'delete users' => 'supprimer',
+            'user manage permission' => 'gestion de permission',
         ],
         'TAGS' => [
-            'create tags' => 'create',
-            'read tags' => 'read',
-            'update tags' => 'update',
-            'delete tags' => 'delete',
+            'create tags' => 'créer',
+            'read tags' => 'consulter',
+            'update tags' => 'modifier',
+            'delete tags' => 'supprimer',
         ],
         'DOCUMENTS' => [
-            'create documents' => 'create',
-            'read documents' => 'read',
-            'update documents' => 'update',
-            'delete documents' => 'delete',
-            'verify documents' => 'verify',
+            'create documents' => 'créer',
+            'read documents' => 'consulter',
+            'update documents' => 'modifier',
+            'delete documents' => 'supprimer',
+            // 'verify documents' => 'vérifier',
         ]
     ],
     'TAG_LEVEL_PERMISSIONS' => [
@@ -34,12 +34,12 @@ return [
         'create documents in tag ' => 'create',
         'update documents in tag ' => 'update',
         'delete documents in tag ' => 'delete',
-        'verify documents in tag ' => 'verify',
+        // 'verify documents in tag ' => 'vérifier',
     ],
     'DOCUMENT_LEVEL_PERMISSIONS' => [
-        'read document ' => 'read',
-        'update document ' => 'update',
-        'delete document ' => 'delete',
-        'verify document ' => 'verify',
+        'read document ' => 'consulter',
+        'update document ' => 'modifier',
+        'delete document ' => 'supprimer',
+        // 'verify document ' => 'vérifier',
     ]
 ];

@@ -1,5 +1,8 @@
 <!-- Name Field -->
-{!! Form::bsText('name') !!}
+<div class="form-group col-sm-6">
+{!! Form::label('name', 'Nom:') !!}
+{!! Form::text('name', null, ['class' => 'form-control']) !!}
+</div>
 {{--if in edit mode--}}
 @if ($document)
     @if (auth()->user()->can('update document '.$document->id) && !auth()->user()->is_super_admin)
@@ -8,7 +11,7 @@
         @endforeach
     @else
         <div class="form-group col-sm-6 ">
-            <label for="tags[]">{{ucfirst(config('settings.tags_label_plural'))}}</label>
+            <label for="tags[]">{{ucfirst(config('settings.tags_label_plural'))}}:</label>
             <select class="form-control select2" id="tags"
                     name="tags[]"
                     multiple>
@@ -23,7 +26,7 @@
     @endif
 @else
     <div class="form-group col-sm-6 {{ $errors->has("tags") ? 'has-error' :'' }}">
-        <label for="tags[]">{{ucfirst(config('settings.tags_label_plural'))}}</label>
+        <label for="tags[]">{{ucfirst(config('settings.tags_label_plural'))}}:</label>
         <select class="form-control select2" id="tags" name="tags[]" multiple>
             @foreach($tags as $tag)
                 @canany (['create documents','create documents in tag '.$tag->id])
@@ -50,7 +53,7 @@
 
 <!-- Submit Field -->
 <div class="form-group col-sm-12">
-    {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
-    {!! Form::submit('Save & Upload', ['class' => 'btn btn-primary','name'=>'savnup']) !!}
-    <a href="{!! route('documents.index') !!}" class="btn btn-default">Cancel</a>
+    {!! Form::submit('Sauvegarder', ['class' => 'btn btn-primary']) !!}
+    {!! Form::submit('Sauvegarder et Uploader', ['class' => 'btn btn-primary','name'=>'savnup']) !!}
+    <a href="{!! route('documents.index') !!}" class="btn btn-default">Annuler</a>
 </div>

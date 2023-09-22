@@ -1,22 +1,22 @@
 @extends('layouts.app')
-@section('title','Show User')
+@section('title','Détail d\'utilisateur')
 @section('content')
     <section class="content-header" style="margin-bottom: 25px;">
         <h1 class="pull-left">
-            User
+            Utilisateurs
         </h1>
         <span class="pull-right">
             <a href="{{ route('users.index') }}" class="btn btn-default">
-                <i class="fa fa-chevron-left" aria-hidden="true"></i> Back
+                <i class="fa fa-chevron-left" aria-hidden="true"></i> Retour
             </a>
             <a href="{{ route('users.edit',$user->id) }}" class="btn btn-primary">
-                <i class="fa fa-edit" aria-hidden="true"></i> Edit
+                <i class="fa fa-edit" aria-hidden="true"></i> Editer
             </a>
             <a href="{{ route('users.blockUnblock', $user->id) }}" class="btn btn-warning">
-                <i class="fa fa-ban"></i> Block / Unblock
+                <i class="fa fa-ban"></i> Bloquer / Débloquer
             </a>
             {!! Form::open(['route' => ['users.destroy', $user->id], 'method' => 'delete','style'=>'display:inline']) !!}
-            {!! Form::button('<i class="fa fa-trash"></i> Delete', [
+            {!! Form::button('<i class="fa fa-trash"></i> Supprimer', [
             'type' => 'submit',
             'title' => 'Delete',
             'class' => 'btn btn-danger',
@@ -31,7 +31,7 @@
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
                         <li class="active"><a href="#user" data-toggle="tab"
-                                              aria-expanded="true">User</a>
+                                              aria-expanded="true">Utilisateur</a>
                         </li>
                         @can('user manage permission')
                             <li class=""><a href="#tab_permissions" data-toggle="tab"
@@ -49,7 +49,7 @@
                                 <thead>
                                 <tr>
                                     <th colspan="3"
-                                        style="font-size: 1.8rem;">Global Permissions
+                                        style="font-size: 1.8rem;">Permissions Global
                                     </th>
                                 </tr>
                                 <tr>
@@ -73,7 +73,7 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="2">No record found</td>
+                                        <td colspan="2">Aucun résultat trouvé</td>
                                     </tr>
                                 @endif
                                 </tbody>
@@ -82,8 +82,8 @@
                                 <thead>
                                 <tr>
                                     <th colspan="3"
-                                        style="font-size: 1.8rem;">{{ucfirst(config('settings.document_label_plural'))}} {{config('settings.tags_label_singular')}}
-                                        wise permissions
+                                        style="font-size: 1.8rem;">
+                                        Permissions aux {{ucfirst(config('settings.document_label_plural'))}} relatives aux {{config('settings.tags_label_plural')}}
                                     </th>
                                 </tr>
                                 <tr>
@@ -94,7 +94,7 @@
                                 <tbody>
                                 @if (count($tags)==0)
                                     <tr>
-                                        <td colspan="2">No record found</td>
+                                        <td colspan="2">Aucun résultat trouvé</td>
                                     </tr>
                                 @endif
                                 @foreach($tags as $tag)
@@ -105,7 +105,22 @@
                                         <td>
                                             @foreach(config('constants.TAG_LEVEL_PERMISSIONS') as $perm_key=>$perm)
                                                 @if ($user->can($perm_key.$tag->id))
-                                                    <label class="label label-default">{{$perm}}</label>
+                                                    <label class="label label-default">
+                                                        <!-- {{$perm}} -->
+                                                        @if($perm == 'create')
+                                                            Créer
+                                                        @endif
+                                                        @if($perm == 'read')
+                                                            Consulter
+                                                        @endif
+                                                        
+                                                        @if($perm == 'update')
+                                                            Modifier
+                                                        @endif
+                                                        @if($perm == 'delete')
+                                                            Supprimer
+                                                        @endif
+                                                    </label>
                                                 @endif
                                             @endforeach
                                         </td>
@@ -117,8 +132,7 @@
                                 <thead>
                                 <tr>
                                     <th colspan="3"
-                                        style="font-size: 1.8rem;">{{ucfirst(config('settings.document_label_singular'))}}
-                                        wise permissions
+                                        style="font-size: 1.8rem;">Permissions relatives aux {{ucfirst(config('settings.document_label_plural'))}} spécifiques
                                     </th>
                                 </tr>
                                 <tr>
@@ -129,7 +143,7 @@
                                 <tbody>
                                 @if (count($documents)==0)
                                     <tr>
-                                        <td colspan="2">No record found</td>
+                                        <td colspan="2">Aucun résultat trouvé</td>
                                     </tr>
                                 @endif
                                 @foreach($documents as $document)

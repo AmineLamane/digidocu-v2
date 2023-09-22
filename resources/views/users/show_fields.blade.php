@@ -1,6 +1,6 @@
 <!-- Name Field -->
 <div class="form-group">
-    {!! Form::label('name', 'Name:') !!}
+    {!! Form::label('name', 'Nom Complet:') !!}
     <p>{{ $user->name }}</p>
 </div>
 
@@ -14,14 +14,14 @@
 
 <!-- Username Field -->
 <div class="form-group">
-    {!! Form::label('username', 'Username:') !!}
+    {!! Form::label('username', 'Nom d\'utilisateur:') !!}
     <p>{{ $user->username }}</p>
 </div>
 
 
 <!-- Address Field -->
 <div class="form-group">
-    {!! Form::label('address', 'Address:') !!}
+    {!! Form::label('address', 'Téléphone:') !!}
     <p>{{ $user->address }}</p>
 </div>
 
@@ -35,7 +35,7 @@
 
 <!-- Status Field -->
 <div class="form-group">
-    {!! Form::label('status', 'Status:') !!}
+    {!! Form::label('status', 'Statut:') !!}
     <p>@php
             if($user->status==config('constants.STATUS.ACTIVE'))
                 echo '<span class="label label-success">'.$user->status.'</span>';
@@ -46,13 +46,13 @@
 
 <!-- Created Field -->
 <div class="form-group">
-    {!! Form::label('created_at', 'Created At:') !!}
+    {!! Form::label('created_at', 'Crée à:') !!}
     <p>{{ formatDateTime($user->created_at) }}</p>
 </div>
 
 <!-- Created Field -->
 <div class="form-group">
-    {!! Form::label('updated_at', 'Updated At:') !!}
+    {!! Form::label('updated_at', 'Mis à jour à:') !!}
     <p>{{ formatDateTime($user->updated_at) }}</p>
 </div>
 

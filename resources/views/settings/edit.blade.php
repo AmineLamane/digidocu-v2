@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','Edit Settings')
+@section('title','Modification de paramètre')
 @section('content')
     <section class="content-header">
         <h1>

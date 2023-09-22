@@ -68,8 +68,8 @@ class DocumentRepository extends BaseRepository
     {
         $query = $this->allQuery($search);
         if(!empty($tag)){
-            $query->whereHas('tags', function ($q) use ($tag) {
-                $q->whereIn('tag_id', $tag);
+            $query->whereHas('tags', function ($q) use ($tag) {   
+                    $q->whereIn('tag_id', $tag);
             });
         }
         if(!empty($status)){

@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('title','Show '.ucfirst(config('settings.file_label_singular')).' Type')
+@section('title','Détail Type de'.ucfirst(config('settings.file_label_singular')))
 @section('content')
     <section class="content-header">
         <h1>
-            {{ucfirst(config('settings.file_label_singular'))}} Type
+            Type de {{ucfirst(config('settings.file_label_singular'))}}
 
             <span class="pull-right">
                 <a href="{{ route('fileTypes.index') }}" class="btn btn-default">

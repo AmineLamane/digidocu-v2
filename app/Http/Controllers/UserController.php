@@ -74,7 +74,7 @@ class UserController extends AppBaseController
             $this->permissionRepository->setPermissionsForUser($user, $this->mapInputToPermissions($input));
         }
         //end permission
-        Flash::success('User saved successfully.');
+        Flash::success('Utilisateur sauvegardé avec succès.');
 
         return redirect(route('users.index'));
     }
@@ -105,7 +105,7 @@ class UserController extends AppBaseController
         $this->authorize('view', $user);
 
         if (empty($user)) {
-            Flash::error('User not found');
+            Flash::error('User non trouvée');
 
             return redirect(route('users.index'));
         }
@@ -140,7 +140,7 @@ class UserController extends AppBaseController
         $user->password = "";
 
         if (empty($user)) {
-            Flash::error('User not found');
+            Flash::error('User non trouvée');
 
             return redirect(route('users.index'));
         }
@@ -188,7 +188,7 @@ class UserController extends AppBaseController
             $user->syncPermissions(array_merge($permissions,$docsPermissions));
         }
         //end permission
-        Flash::success('User updated successfully.');
+        Flash::success('Utilisateur mis à jour avec succès.');
         return redirect(route('users.index'));
     }
 
@@ -212,7 +212,7 @@ class UserController extends AppBaseController
             return redirect(route('users.index'));
         }
         $this->userRepository->delete($id);
-        Flash::success('User deleted successfully.');
+        Flash::success('Utilisateur supprimé avec succès.');
         return redirect(route('users.index'));
     }
 
@@ -224,7 +224,7 @@ class UserController extends AppBaseController
 
         $user->save();
 
-        Flash::success('User ' . strtolower($user->status) . " successfully.");
+        Flash::success("Le status d'utilisateur est changé avec succès.");
 
         return redirect()->route('users.index');
     }

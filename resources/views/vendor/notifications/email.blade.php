@@ -1,20 +1,22 @@
 @component('mail::message')
-{{-- Greeting --}}
+<!-- {{-- Greeting --}}
 @if (! empty($greeting))
-# {{ $greeting }}
+# 
 @else
 @if ($level === 'error')
 # @lang('Whoops!')
 @else
 # @lang('Hello!')
 @endif
-@endif
+@endif -->
+<p>Bonjour!</p>
 
-{{-- Intro Lines --}}
+<!-- {{-- Intro Lines --}}
 @foreach ($introLines as $line)
 {{ $line }}
 
-@endforeach
+@endforeach -->
+<p>Vous recevez cet e-mail car nous avons reçu une demande de réinitialisation de mot de passe pour votre compte</p>
 
 {{-- Action Button --}}
 @isset($actionText)
@@ -29,32 +31,33 @@
     }
 ?>
 @component('mail::button', ['url' => $actionUrl, 'color' => $color])
-{{ $actionText }}
+<!-- {{ $actionText }} --> Réinitialiser le mot de passe
 @endcomponent
 @endisset
 
-{{-- Outro Lines --}}
+<!-- {{-- Outro Lines --}}
 @foreach ($outroLines as $line)
 {{ $line }}
 
-@endforeach
+@endforeach -->
+<p>Ce lien de réinitialisation de mot de passe expirera dans 60 minutes.</p>
 
-{{-- Salutation --}}
+<!-- {{-- Salutation --}}
 @if (! empty($salutation))
 {{ $salutation }}
-@else
-@lang('Regards'),<br>
+@else -->
+<p>Si vous n'avez pas demandé de réinitialisation de mot de passe, aucune action supplémentaire n'est nécessaire.
+<br>Salutations,<br>
 {{ config('app.name') }}
 @endif
-
+</p>
 {{-- Subcopy --}}
 @isset($actionText)
 @slot('subcopy')
 @lang(
-    "If you’re having trouble clicking the \":actionText\" button, copy and paste the URL below\n".
-    'into your web browser: [:actionURL](:actionURL)',
+    "Si vous rencontrez des difficultés à cliquer sur le bouton 'Réinitialiser le mot de passe', copiez et collez l'URL ci-dessous\n".
+    'dans votre navigateur web : [:actionURL](:actionURL)',
     [
-        'actionText' => $actionText,
         'actionURL' => $actionUrl,
     ]
 )

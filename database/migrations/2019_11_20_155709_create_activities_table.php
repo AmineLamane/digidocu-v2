@@ -17,7 +17,9 @@ class CreateActivitiesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('created_by');
             $table->text('activity')->nullable();
-
+            $table->integer('document_id')->unsigned()->nullable();
+            $table->foreign('document_id')->references('id')->on('documents')
+                ->onDelete('set null')->onUpdate('cascade');
             $table->foreign('created_by')->references('id')->on('users');
             $table->timestamps();
         });

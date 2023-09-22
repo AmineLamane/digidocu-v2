@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','List '.ucfirst(config('settings.tags_label_plural')))
+@section('title','Liste de '.ucfirst(config('settings.tags_label_plural')))
 @section('content')
     <section class="content-header">
         <h1 class="pull-left">{{ucfirst(config('settings.tags_label_plural'))}}</h1>
@@ -8,7 +8,7 @@
                 <a class="btn btn-primary pull-right" style="margin-top: -10px;margin-bottom: 5px"
                    href="{!! route('tags.create') !!}">
                     <i class="fa fa-plus"></i>
-                    Add New
+                    Nouveau service
                 </a>
             @endcan
         </h1>

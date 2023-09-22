@@ -11,7 +11,7 @@
                     </label></td>
             @endforeach
             <td>
-                <button onclick="removeRow(this)" class="btn btn-danger btn-xs" title="Remove row"><i
+                <button onclick="removeRow(this)" class="btn btn-danger btn-xs" title="Supprimer immédiatement"><i
                         class="fa fa-trash"></i></button>
             </td>
         </tr>
@@ -37,7 +37,7 @@
                 addRow();
                 $("#permission-body>tr:last-child").find("select[name^='tag_permissions']").val('{{$value['tag_id']}}');
                 @foreach($value['permissions'] as $perm)
-                $("#permission-body>tr:last-child").find("input[name$='[{{$perm}}]']").attr('checked','checked');
+                $("#permission-body>tr:last-child").find("input[name$='[{{$perm}}]']").prop('checked',true);
                 @endforeach
             @endforeach
             registerIcheck();
@@ -46,7 +46,7 @@
 @endcan
 <div class="box box-primary">
     <div class="box-header no-border">
-        <h3 class="box-title">User Detail</h3>
+        <h3 class="box-title">Détail d'utilisateur</h3>
 
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -57,7 +57,7 @@
         <div class="row">
             <!-- Name Field -->
             <div class="form-group col-sm-6 {{ $errors->has('name') ? 'has-error' :'' }}">
-                {!! Form::label('name', 'Name:') !!}
+                {!! Form::label('name', 'Nom Complet:') !!}
                 {!! Form::text('name', null, ['class' => 'form-control']) !!}
                 {!! $errors->first('name','<span class="help-block">:message</span>') !!}
             </div>
@@ -73,7 +73,7 @@
 
             <!-- Username Field -->
             <div class="form-group col-sm-6 {{ $errors->has('username') ? 'has-error' :'' }}">
-                {!! Form::label('username', 'Username:') !!}
+                {!! Form::label('username', 'Nom d\'utilisateur:') !!}
                 {!! Form::text('username', null, ['class' => 'form-control']) !!}
                 {!! $errors->first('username','<span class="help-block">:message</span>') !!}
             </div>
@@ -81,14 +81,14 @@
 
             <!-- Address Field -->
             <div class="form-group col-sm-6 {{ $errors->has('address') ? 'has-error' :'' }}">
-                {!! Form::label('address', 'Address:') !!}
+                {!! Form::label('address', 'Téléphone:') !!}
                 {!! Form::text('address', null, ['class' => 'form-control']) !!}
                 {!! $errors->first('address','<span class="help-block">:message</span>') !!}
             </div>
 
             <!-- Password Field -->
             <div class="form-group col-sm-6 {{ $errors->has('password') ? 'has-error' :'' }}">
-                {!! Form::label('password', 'Password:') !!}
+                {!! Form::label('password', 'Mot de passe:') !!}
                 {!! Form::text('password', null, ['class' => 'form-control']) !!}
                 {!! $errors->first('password','<span class="help-block">:message</span>') !!}
             </div>
@@ -102,7 +102,7 @@
 
             <!-- Description Field -->
             <div class="form-group col-sm-12 col-lg-12 {{ $errors->has('description') ? 'has-error' :'' }}">
-                {!! Form::label('description', 'Description(Additional Information):') !!}
+                {!! Form::label('description', 'Description(Information additionnel):') !!}
                 {!! Form::textarea('description', null, ['class' => 'form-control b-wysihtml5-editor']) !!}
                 {!! $errors->first('description','<span class="help-block">:message</span>') !!}
             </div>
@@ -112,7 +112,7 @@
 @can('user manage permission')
     <div class="box box-primary">
         <div class="box-header no-border">
-            <h3 class="box-title">Global Permissions</h3>
+            <h3 class="box-title">Permissions Globals</h3>
 
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -130,7 +130,7 @@
                                     <label>
                                         <input name="global_permissions[]" type="checkbox" class="iCheck-helper"
                                                value="{{$permission_name}}" {{optional($user ?? null)->can($permission_name)?'checked':''}}>
-                                        &nbsp;{{ucfirst($permission_label)}} Users
+                                        &nbsp;{{ucfirst($permission_label)}} Utilisateurs
                                     </label>
                                 </div>
                             @endforeach
@@ -167,7 +167,7 @@
     </div>
     <div class="box box-primary">
         <div class="box-header no-border">
-            <h3 class="box-title">{{ucfirst(config('settings.tags_label_plural'))}} Wise Permissions</h3>
+            <h3 class="box-title">Permissions relatives aux {{ucfirst(config('settings.tags_label_plural'))}}</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                 </button>
@@ -179,10 +179,14 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th>Select {{ucfirst(config('settings.tags_label_singular'))}}</th>
-                            @foreach (config('constants.TAG_LEVEL_PERMISSIONS')  as $perm)
-                                <th>{{ucfirst($perm)}}</th>
-                            @endforeach
+                            <th>Sélectionner {{ucfirst(config('settings.tags_label_singular'))}}</th>
+                            <th>Consulter</th>
+                            <th>Créer</th>
+                            <th>Modifier</th>
+                            <th>Supprimer</th>
+                            <!-- @foreach (config('constants.TAG_LEVEL_PERMISSIONS')  as $perm) -->
+                                <!-- <th>{{ucfirst($perm)}}</th> -->
+                            <!-- @endforeach -->
                         </tr>
                         </thead>
                         <tbody id="permission-body">
@@ -191,8 +195,7 @@
                         <tfoot>
                         <tr>
                             <td colspan="6">
-                                <button type="button" onclick="addRow()" class="btn btn-info btn-xs">Add
-                                    new {{config('settings.tags_label_singular')}}</button>
+                                <button type="button" onclick="addRow()" class="btn btn-info btn-xs">Ajouter un nouveau {{config('settings.tags_label_singular')}}</button>
                             </td>
                         </tr>
                         </tfoot>
@@ -204,6 +207,6 @@
 @endcan
 <!-- Submit Field -->
 <div class="form-group">
-    {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
-    <a href="{!! route('users.index') !!}" class="btn btn-default">Cancel</a>
+    {!! Form::submit('Enregistrer', ['class' => 'btn btn-primary']) !!}
+    <a href="{!! route('users.index') !!}" class="btn btn-default">Annuler</a>
 </div>

@@ -18,6 +18,7 @@ class CreateCustomFieldsTable extends Migration
             $table->string('model_type');
             $table->string('name');
             $table->string('validation')->nullable();
+            $table->text('suggestions')->nullable();
             $table->timestamps();
         });
     }

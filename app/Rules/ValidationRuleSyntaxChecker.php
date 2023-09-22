@@ -35,6 +35,6 @@ class ValidationRuleSyntaxChecker implements Rule
      */
     public function message()
     {
-        return ':attribute must be valid laravel validation rules.';
+        return ':attribute doit être une règle de validation de Laravel valide.';
     }
 }

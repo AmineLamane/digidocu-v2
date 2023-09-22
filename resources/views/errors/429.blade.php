@@ -1,5 +1,5 @@
 @extends('errors.illustrated-layout')
 
-@section('title', __('Too Many Requests'))
+@section('title', __('Trop de requêtes'))
 @section('code', '429')
-@section('message', __('Too Many Requests'))
+@section('message', __('Trop de requêtes'))
