@@ -17,6 +17,7 @@ class CreateTagsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('color');
+            $table->unsignedBigInteger('parent_id')->constrained()->nullable()->default(null);
             $table->unsignedBigInteger('created_by');
             $table->text('custom_fields')->nullable();
             $table->timestamps();

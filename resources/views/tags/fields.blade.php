@@ -12,6 +12,13 @@
     {!! Form::color('color', null, ['class' => 'form-control']) !!}
     {!! $errors->first('color','<span class="help-block">:message</span>') !!}
 </div>
+
+<!-- Parent Field -->
+<div class="form-group col-sm-6 {{ $errors->has('parent_id') ? 'has-error' :'' }}">
+    {!! Form::label('parent_id', 'Parent:') !!}
+    {!! Form::select('parent_id',$tags,null,['class'=>'form-control input-sm']) !!}
+</div>
+
 {{--additional Attributes--}}
 @foreach ($customFields as $customField)
     <div class="form-group col-sm-6 {{ $errors->has("custom_fields.$customField->name") ? 'has-error' :'' }}">

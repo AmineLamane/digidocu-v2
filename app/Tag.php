@@ -39,6 +39,7 @@ class Tag extends Model
     public $fillable = [
         'name',
         'color',
+        'parent_id',
         'created_by',
         'custom_fields'
     ];
@@ -52,6 +53,7 @@ class Tag extends Model
         'id' => 'integer',
         'name' => 'string',
         'color' => 'string',
+        'parent_id' => 'integer',
         'created_by' => 'integer',
         'custom_fields' => 'array'
     ];
@@ -73,6 +75,16 @@ class Tag extends Model
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
     }
+    public function parent()
+    {
+        return $this->belongsTo(Tag::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Tag::class,'parent_id', 'id' );
+    }
+
 
     public function documents()
     {

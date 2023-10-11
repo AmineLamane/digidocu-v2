@@ -64,26 +64,132 @@ class DocumentController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', Document::class);
+        $user = Auth::user();
+        //get current tag
+        $currenttag = null;
+        $tagId = $request->input('tags');
+        if($request->has('tags')){
+            $currenttag = Tag::findOrFail($tagId);
+            $this->authorize('viewtag', $currenttag);
+        }
+        //initializing the breadcrumb
+        $breadcrumb = [];
+        //filling the breadcrumb
+        if ($currenttag) {
+            $breadcrumb = $this->generateBreadcrumb($currenttag);
+        }
+        $ancestors = [];
+        $ancestorstocheck = Tag::where('parent_id', $tagId)->get();
+        // Generate an array of permissions to check for each tag.
+        $permissionstocheck = Tag::selectRaw('CONCAT("read documents in tag ", id) as permissions, id')
+            ->whereIn('id', $ancestorstocheck->pluck('id'))
+            ->pluck('permissions', 'id')
+            ->toArray();
+        // Generate an array of permissions to check for each document.
+        $documentspermissions = Document::selectRaw('CONCAT("read document ", documents.id) as permissions, tags.id as tag_id')
+            ->join('documents_tags', 'documents.id', '=', 'documents_tags.document_id')
+            ->join('tags', 'documents_tags.tag_id', '=', 'tags.id')
+            ->whereIn('tags.id', $ancestorstocheck->pluck('id'))
+            ->pluck('permissions', 'tag_id')
+            ->toArray();
+        // Check read permission in any tag in ancestorstocheck and its child.
+        foreach ($permissionstocheck as $id => $permission) {
+            if (Auth::user()->can($permission) && !in_array($id, array_column($ancestors, 'id'))) {
+                $ancestors[] = Tag::find($id);
+            }
+        }
+        foreach ($documentspermissions as $id => $permission) {
+            if (Auth::user()->can($permission) && !in_array($id, array_column($ancestors, 'id'))) {
+                $ancestors[] = Tag::find($id);
+            }
+        }
+
+        foreach ($ancestorstocheck as $ancestor) {
+            $children = $ancestor->children;
+            $this->checkChildPermissions($children, $ancestor, $ancestors);
+        }
+        
+        foreach ($ancestorstocheck as $tag) {
+            $tagPermissions = [];
+            $currentTag = $tag;
+            while ($currentTag) {
+                $tagPermissions[] = 'read documents in tag ' . $currentTag->id;
+                $currentTag = $currentTag->parent; // Move to the parent tag.
+            }
+            if ($user->hasAnyPermission($tagPermissions)) {
+                if (!in_array($tag->id, array_column($ancestors, 'id'))) {
+                    $ancestors[] = $tag;
+                }
+            }
+        }
+        
+        $tags = $tagId ? [$tagId] : [];
+        array_push($tags,$request->tags);
         $documents = $this->documentRepository->searchDocuments(
             $request->get('search'),
-            $request->get('tags'),
+            $tags,
             $request->get('status')
         );
-        $tags = $this->tagRepository->all();
-        return view('documents.index', compact('documents', 'tags'));
+        return view('documents.index', compact('documents', 'ancestors','currenttag','breadcrumb'));
     }
 
+    private function checkChildPermissions($children, $ancestor, &$ancestors) {
+        if (!$children->isEmpty()) {
+            foreach ($children as $child) {
+                $permissionstocheck = Tag::selectRaw('CONCAT("read documents in tag ", id) as permissions, id')
+                    ->where('id', $child->id)
+                    ->pluck('permissions', 'id')
+                    ->toArray();
+                $documentspermissions = Document::selectRaw('CONCAT("read document ", id) as permissions, id')
+                ->whereHas('tags', function ($query) use ($child) {
+                    $query->where('id', $child->id);
+                })->pluck('permissions', 'id')
+                ->toArray();
+                $permissionstocheck+= $documentspermissions;
+                foreach ($permissionstocheck as $id => $permission) {
+                    if (Auth::user()->can($permission) && !in_array($ancestor->id, array_column($ancestors, 'id'))) {
+                        $ancestors[] = $ancestor;
+                    }
+                }
+    
+                $this->checkChildPermissions($child->children, $ancestor, $ancestors);
+            }
+        }
+    }
+
+    private function generateBreadcrumb($tag)
+    {
+        $breadcrumb = [];
+
+        while ($tag->parent) {
+            $breadcrumb[] = [$tag->parent->id => $tag->parent->name];
+            $tag = $tag->parent;
+        }
+
+        return array_reverse($breadcrumb);
+    }
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        $this->authorize('create', Document::class);
+        $tag = Tag::findOrFail($request->tag);
+        $this->authorize('create', [Document::class, $tag]);
         $tags = $this->tagRepository->all();
+        $gettag = $tag;
+        $currenttag = $tag;
+        $parents = [];
+        $breadcrumb = $this->generateBreadcrumb($currenttag);
+        while ($currenttag) {
+            $currenttag = $currenttag->parent?? null;
+            if($currenttag){
+                $parents[]= $currenttag->id;
+            }
+        }
         $customFields = $this->customFieldRepository->getForModel('documents');
-        return view('documents.create', compact('tags', 'customFields'));
+        return view('documents.create', compact('tags', 'customFields','gettag','parents', 'breadcrumb'));
     }
 
     /**
@@ -97,7 +203,6 @@ class DocumentController extends Controller
         $data = $request->all();
         $data['created_by'] = Auth::id();
         $data['status'] = config('constants.STATUS.PENDING');
-
         $this->authorize('store', [Document::class, $data['tags']]);
 
         $document = $this->documentRepository->createWithTags($data);
@@ -112,7 +217,7 @@ class DocumentController extends Controller
         if ($request->has('savnup')) {
             return redirect()->route('documents.files.create', $document->id);
         }
-        return redirect()->route('documents.index');
+        return redirect()->route('documents.index',['tags' => $data['tags'][0]]);
     }
 
     /**
@@ -132,8 +237,9 @@ class DocumentController extends Controller
         $this->authorize('view', $document);
 
         $missigDocMsgs = $this->documentRepository->buildMissingDocErrors($document);
-        $dataToRet = compact('document', 'missigDocMsgs');
-
+        $gettag = $document->tags[0];
+        $breadcrumb = $this->generateBreadcrumb($gettag);
+        $dataToRet = compact('document', 'missigDocMsgs', 'breadcrumb');
         if (auth()->user()->can('user manage permission')) {
             $users = User::where('id', '!=', 1)->get();
             $thisDocPermissionUsers = $this->permissionRepository->getUsersWiseDocumentLevelPermissionsForDoc($document);
@@ -144,12 +250,14 @@ class DocumentController extends Controller
 
             $dataToRet = array_merge($dataToRet, compact('users', 'thisDocPermissionUsers', 'tagWisePermList', 'globalPermissionUsers'));
         }
+        
+        
         return view('documents.show', $dataToRet);
     }
 
     public function storePermission($id, Request $request)
     {
-        abort_if(!auth()->user()->can('user manage permission'), 403, 'This action is unauthorized .');
+        abort_if(!auth()->user()->can('user manage permission'), 403, 'Cette action n\'est pas autorisée .');
         $input = $request->all();
         $user = User::findOrFail($input['user_id']);
         $doc_permissions = $input['document_permissions'];
@@ -161,7 +269,7 @@ class DocumentController extends Controller
 
     public function deletePermission($documentId, $userId)
     {
-        abort_if(!auth()->user()->can('user manage permission'), 403, 'This action is unauthorized.');
+        abort_if(!auth()->user()->can('user manage permission'), 403, 'Cette action n\'est pas autorisée.');
         $user = User::findOrFail($userId);
         $document = Document::findOrFail($documentId);
         $this->permissionRepository->deleteDocumentLevelPermissionForUser($document,$user);
@@ -177,11 +285,13 @@ class DocumentController extends Controller
      */
     public function edit($id)
     {
-        $document = Document::findOrFail($id);
+        $document = Document::with('tags')->findOrFail($id);
         $this->authorize('edit', $document);
+        $gettag = $document->tags[0];
         $tags = Tag::all();
+        $breadcrumb = $this->generateBreadcrumb($gettag);
         $customFields = $this->customFieldRepository->getForModel('documents');
-        return view('documents.edit', compact('tags', 'customFields', 'document'));
+        return view('documents.edit', compact('tags', 'customFields', 'document','gettag','breadcrumb'));
     }
 
     /**
@@ -199,7 +309,10 @@ class DocumentController extends Controller
         $this->documentRepository->updateWithTags($data,$document);
         $document->newActivity(ucfirst(config('settings.document_label_singular')) . " Mis à jour");
         Flash::success(ucfirst(config('settings.document_label_singular')) . " Mis à jour avec succès!");
-        return redirect()->route('documents.index');
+        if ($request->has('savnup')) {
+            return redirect()->route('documents.files.create', $document->id);
+        }
+        return redirect()->route('documents.show',$id);
     }
 
     /**
@@ -208,14 +321,13 @@ class DocumentController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request,Document $document)
     {
-        $document = Document::findOrFail($id);
         $this->authorize('delete', $document);
         $document->newActivity(ucfirst(config('settings.document_label_singular')) . " Supprimé");
         $this->documentRepository->deleteWithFiles($document,true);
         Flash::success(ucfirst(config('settings.document_label_singular')) . " Supprimé avec succès!");
-        return redirect()->route('documents.index');
+        return redirect()->route('documents.index',['tags'=> $request->tags]);
     }
 
     public function verify($id, Request $request)

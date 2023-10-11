@@ -20,6 +20,8 @@ class TagDataTable extends DataTable
         $dataTable = $dataTable->addColumn('action', 'tags.datatables_actions')
             ->addColumn('created_by', function (Tag $tag) {
                 return $tag->createdBy->name;
+            })->addColumn('parent', function (Tag $tag) {
+                return $tag->parent ? $tag->parent->name : '';
             })->editColumn('color', function (Tag $tag) {
                 return '<span class="label" style="background-color: ' . $tag->color . '">' . $tag->color . '</span>';
             })->rawColumns(['color'], true)
@@ -38,7 +40,7 @@ class TagDataTable extends DataTable
      */
     public function query(Tag $model)
     {
-        $query = $model->newQuery()->with(['createdBy']);
+        $query = $model->newQuery()->with(['createdBy','parent']);
         return $query;
     }
 
@@ -51,6 +53,7 @@ class TagDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
+            ->addColumn(['data' => 'parent', 'title' => 'Parent'])
             ->addColumn(['data' => 'created_by', 'title' => 'Crée par'])
             ->minifiedAjax()
             ->addAction(['width' => '120px', 'printable' => false , 'title' => 'Actions'])

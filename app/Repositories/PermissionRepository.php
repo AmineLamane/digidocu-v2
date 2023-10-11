@@ -37,6 +37,24 @@ class PermissionRepository extends BaseRepository
                     }
                 }
             }
+            $parent = $tag->parent?? [];
+            while (!empty($parent)) {
+                foreach (config('constants.TAG_LEVEL_PERMISSIONS') as $perm_key => $perm) {
+                    $usersTagWise = User::permission([$perm_key . $parent->id])->get();
+                    foreach ($usersTagWise as $item) {
+                        if (isset($tagWisePermList[$parent->id . '_' . $item->id])) {
+                            $tagWisePermList[$parent->id . '_' . $item->id]['permissions'][] = $perm;
+                        } else {
+                            $tagWisePermList[$parent->id . '_' . $item->id] = [
+                                'tag' => $parent,
+                                'user' => $item,
+                                'permissions' => [$perm]
+                            ];
+                        }
+                    }
+                }
+                $parent = $parent->parent;
+            }
         }
         return $tagWisePermList;
     }

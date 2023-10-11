@@ -36,7 +36,7 @@
 
 <!-- Created At Field -->
 <div class="form-group">
-    {!! Form::label('created_at', 'Créé par:') !!}
+    {!! Form::label('created_at', 'Créé à:') !!}
     <p>{{ formatDateTime($customField->created_at) }}</p>
 </div>
 

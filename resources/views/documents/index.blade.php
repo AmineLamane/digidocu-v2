@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title',ucfirst(config('settings.document_label_plural')))
+@section('title',$currenttag? $currenttag->name : ucfirst(config('settings.document_label_plural')))
 @section('css')
     <style type="text/css">
         .bg-folder-shaper {
@@ -63,17 +63,29 @@
 @stop
 @section('content')
     <section class="content-header">
-        <h1 class="pull-left">
-            {{ucfirst(config('settings.document_label_plural'))}}
-        </h1>
+        <h4 class="pull-left">
+        @if(!isset($_GET['tags']))
+            /racine
+        @else
+        /<a href="{{ route('documents.index') }}">racine</a>
+
+        @foreach($breadcrumb as $item)
+            / <a href="{{ route('documents.index', ['tags' => key($item)]) }}">{{ current($item) }}</a>
+        @endforeach
+
+        / {{ $currenttag->name }}
+        @endif
+        </h4>
         <h1 class="pull-right">
-            @can('create',\App\Document::class)
-                <a href="{{route('documents.create')}}"
-                   class="btn btn-primary">
-                    <i class="fa fa-plus"></i>
-                    Nouveau Dossier
-                </a>
-            @endcan
+            @if(isset($_GET['tags']))
+                @can('create', [\App\Document::class, $currenttag])
+                    <a href="{{route('documents.create',['tag' => $_GET['tags']])}}"
+                    class="btn btn-primary">
+                        <i class="fa fa-plus"></i>
+                        Nouveau Fichier
+                    </a>
+                @endcan
+            @endif
         </h1>
     </section>
     <div class="content" style="margin-top: 22px;">
@@ -86,26 +98,23 @@
             <div class="box-header">
                 <div class="form-group hidden visible-xs">
                     <button type="button" class="btn btn-default btn-block" data-toggle="collapse"
-                            data-target="#filterForm"><i class="fa fa-filter"></i> Filter
+                            data-target="#filterForm"><i class="fa fa-filter"></i> Filtrer
                     </button>
                 </div>
                 {!! Form::model(request()->all(), ['method'=>'get','class'=>'form-inline visible hidden-xs','id'=>'filterForm']) !!}
+                @if(isset($currenttag))
+                {!! Form::text('tags',$currenttag->id,['class'=>'form-control input-sm hidden']) !!}
+                @endif
                 <div class="form-group">
                     <label for="search" class="sr-only">Rechercher</label>
                     {!! Form::text('search',null,['class'=>'form-control input-sm','placeholder'=>'Rechercher...']) !!}
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label for="tags" class="sr-only">{{ucfirst(config('settings.tags_label_plural'))}}:</label>
                     <select class="form-control select2 input-sm" name="tags[]" id="tags"
                             data-placeholder="Choisir les {{config('settings.tags_label_plural')}}" multiple>
-                        @foreach($tags as $tag)
-                            @canany(['read documents','read documents in tag '.$tag->id])
-                                <option
-                                    value="{{$tag->id}}" {{in_array($tag->id,request('tags',[]))?'selected':''}}>{{$tag->name}}</option>
-                            @endcanany
-                        @endforeach
                     </select>
-                </div>
+                </div> -->
                 <!-- <div class="form-group">
                     <label for="status" class="sr-only">{{config('settings.tags_label_singular')}}:</label>
                     {!! Form::select('status',['0'=>"Tout",config('constants.STATUS.PENDING')=>config('constants.STATUS.PENDING'),config('constants.STATUS.APPROVED')=>config('constants.STATUS.APPROVED'),config('constants.STATUS.REJECT')=>config('constants.STATUS.REJECT')],null,['class'=>'form-control input-sm']) !!}
@@ -114,75 +123,134 @@
                 {!! Form::close() !!}
             </div>
             <div class="box-body">
-                <div class="row">
-                    @foreach ($documents as $document)
-                        @cannot('view',$document)
-                            @continue
-                        @endcannot
-                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-6 m-t-20" style="cursor:pointer;">
-                            <div class="doc-box box box-widget widget-user-2">
-                                <div class="widget-user-header bg-gray bg-folder-shaper no-padding">
-                                    <div class="folder-shape-top bg-gray"></div>
-                                    <div class="box-header">
-                                        <a href="{{route('documents.show',$document->id)}}" style="color: black;">
-                                            <h3 class="box-title"><i class="fa fa-folder text-yellow"></i></h3>
-                                        </a>
+            @if(count($ancestors) != 0)
+            <h4>
+                Dossiers
+            </h4>
+            <div class="row">
+            @foreach ($ancestors as $ancestor)
+                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-6 m-t-20" style="cursor:pointer;">
+                    <div class="doc-box box box-widget widget-user-2">
+                        <div class="widget-user-header bg-gray bg-folder-shaper no-padding">
+                            <div class="folder-shape-top bg-gray"></div>
+                            <div class="box-header">
+                                <a href="{{route('documents.index',['tags' => $ancestor->id])}}" style="color: black;">
+                                    <h3 class="box-title"><i class="fa fa-folder text-yellow"></i></h3>
+                                </a>
 
-                                        <div class="box-tools pull-right">
-                                            <div class="btn-group">
-                                                <button type="button" class="btn btn-default btn-flat dropdown-toggle"
-                                                        data-toggle="dropdown" aria-expanded="false"
-                                                        style="    background: transparent;border: none;">
-                                                    <i class="fa fa-ellipsis-v"></i>
-                                                    <span class="sr-only">Toggle Dropdown</span>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-left" role="menu">
-                                                    <li><a href="{{route('documents.show',$document->id)}}">Consulter</a>
-                                                    </li>
-                                                    @can('edit',$document)
-                                                        <li><a href="{{route('documents.edit',$document->id)}}">Editer</a>
-                                                        </li>
-                                                    @endcan
-                                                    @can('delete',$document)
-                                                        <li>
-                                                            {!! Form::open(['route' => ['documents.destroy', $document->id], 'method' => 'delete']) !!}
-                                                            {!! Form::button('Supprimer', [
-                                                                        'type' => 'submit',
-                                                                        'class' => 'btn btn-link',
-                                                                        'onclick' => "return conformDel(this,event)"
-                                                                    ]) !!}
-                                                            {!! Form::close() !!}
-                                                        </li>
-                                                    @endcan
-
-                                                </ul>
-                                            </div>
-                                        </div>
+                                <div class="box-tools pull-right">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default btn-flat dropdown-toggle"
+                                                data-toggle="dropdown" aria-expanded="false"
+                                                style="    background: transparent;border: none;">
+                                            <i class="fa fa-ellipsis-v"></i>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-left" role="menu">
+                                            <li><a href="{{route('documents.index',['tags' => $ancestor->id])}}">Consulter</a>
+                                            </li>
+                                        </ul>
                                     </div>
-                                    <!-- /.widget-user-image -->
-                                    <a href="{{route('documents.show',$document->id)}}" style="color: black;">
-                                    <span style="max-lines: 1; white-space: nowrap;margin-left: 3px;">
-                                    @foreach ($document->tags as $tag)
-                                            <small class="label"
-                                                   style="background-color: {{$tag->color}};font-size: 0.93rem;">{{$tag->name}}</small>
-                                        @endforeach
-                                    </span>
-                                        <h5 class="widget-user-username" title="{{$document->name}}"
-                                            data-toggle="tooltip">{{$document->name}}</h5>
-                                        <h5 class="widget-user-desc" style="font-size: 12px"><span data-toggle="tooltip"
-                                                                                                   title="{{formatDateTime($document->updated_at)}}">{{formatDate($document->updated_at)}}</span>
-                                            <!-- <span
-                                                class="pull-right" style="margin-right: 15px;">
-                                            {!! $document->isVerified ? '<i title="Vérifié" data-toggle="tooltip" class="fa fa-check-circle" style="color: #388E3C;"></i>':'<i title="Non Vérifié" data-toggle="tooltip" class="fa fa-remove" style="color: #f44336;"></i>' !!}
-                                        </span> -->
-                                    </h5>
-                                    </a>
                                 </div>
                             </div>
-                            <!-- /.widget-user -->
+                            <!-- /.widget-user-image -->
+                            <a href="{{route('documents.index',['tags' => $ancestor->id])}}" style="color: black;">
+                            <span style="max-lines: 1; white-space: nowrap;margin-left: 3px;">
+                            </span>
+                                <h5 class="widget-user-username" title="{{$ancestor->name}}"
+                                    data-toggle="tooltip">{{$ancestor->name}}</h5>
+                            </h5>
+                            </a>
                         </div>
-                    @endforeach
+                    </div>
+                    <!-- /.widget-user -->
                 </div>
+            @endforeach
+            </div>
+            @endif
+            @if(isset($_GET['tags']))
+            <h4>
+                Fichiers
+            </h4>
+            @cannot('viewtagorparent',$currenttag)
+                Vous n'avez pas les permissions nécessaires pour consulter les fichiers de cette entité.
+            @endcannot
+            @can('viewtagorparent',$currenttag)
+            @if(count($documents) == 0)
+                Aucun fichier dans cette entité
+            @endif
+            <div class="row">
+            @foreach ($documents as $document)
+                @cannot('view',$document)
+                    @continue
+                @endcannot
+                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-6 m-t-20" style="cursor:pointer;">
+                    <div class="doc-box box box-widget widget-user-2">
+                        <div class="widget-user-header bg-gray bg-folder-shaper no-padding">
+                            <div class="folder-shape-top bg-gray"></div>
+                            <div class="box-header">
+                                <a href="{{route('documents.show',$document->id)}}" style="color: black;">
+                                    <h3 class="box-title"><i class="fa fa-folder text-yellow"></i></h3>
+                                </a>
+
+                                <div class="box-tools pull-right">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default btn-flat dropdown-toggle"
+                                                data-toggle="dropdown" aria-expanded="false"
+                                                style="    background: transparent;border: none;">
+                                            <i class="fa fa-ellipsis-v"></i>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-left" role="menu">
+                                            <li><a href="{{route('documents.show',$document->id)}}">Consulter</a>
+                                            </li>
+                                            @can('edit',$document)
+                                                <li><a href="{{route('documents.edit',$document->id)}}">Editer</a>
+                                                </li>
+                                            @endcan
+                                            @can('delete',$document)
+                                                <li>
+                                                {!! Form::open(['route' => ['documents.destroy', 'document' => $document->id, 'tags' => $_GET['tags']], 'method' => 'delete']) !!}
+                                                    {!! Form::button('Supprimer', [
+                                                        'type' => 'submit',
+                                                        'class' => 'btn btn-link',
+                                                        'onclick' => "return conformDel(this,event)"
+                                                    ]) !!}
+                                                {!! Form::close() !!}
+                                                </li>
+                                            @endcan
+
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.widget-user-image -->
+                            <a href="{{route('documents.show',$document->id)}}" style="color: black;">
+                            <span style="max-lines: 1; white-space: nowrap;margin-left: 3px;">
+                            @foreach ($document->tags as $tag)
+                                    <small class="label"
+                                            style="background-color: {{$tag->color}};font-size: 0.93rem;">{{$tag->name}}</small>
+                                @endforeach
+                            </span>
+                                <h5 class="widget-user-username" title="{{$document->name}}"
+                                    data-toggle="tooltip">{{$document->name}}</h5>
+                                <h5 class="widget-user-desc" style="font-size: 12px"><span data-toggle="tooltip"
+                                                                                            title="{{formatDateTime($document->updated_at)}}">{{formatDate($document->updated_at)}}</span>
+                                    <!-- <span
+                                        class="pull-right" style="margin-right: 15px;">
+                                    {!! $document->isVerified ? '<i title="Vérifié" data-toggle="tooltip" class="fa fa-check-circle" style="color: #388E3C;"></i>':'<i title="Non Vérifié" data-toggle="tooltip" class="fa fa-remove" style="color: #f44336;"></i>' !!}
+                                </span> -->
+                            </h5>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- /.widget-user -->
+                </div>
+            @endforeach
+            </div>
+            @endcan
+            
+            @endif
             </div>
             <div class="box-footer">
                 {!! $documents->appends(request()->all())->render() !!}
