@@ -13,7 +13,6 @@ class FileTypesSeeder extends Seeder
     public function run()
     {
         FileType::create([
-            'id' => 1,
             'name' => 'Général',
             'no_of_files' => 1,
             'labels' => 'Document1',
@@ -22,7 +21,6 @@ class FileTypesSeeder extends Seeder
         ]);
         
         FileType::create([
-            'id' => 2,
             'name' => 'CPS',
             'no_of_files' => 1,
             'labels' => 'CPS',
@@ -31,7 +29,6 @@ class FileTypesSeeder extends Seeder
         ]);
         
         FileType::create([
-            'id' => 3,
             'name' => 'RC',
             'no_of_files' => 1,
             'labels' => 'RC',
@@ -40,7 +37,6 @@ class FileTypesSeeder extends Seeder
         ]);
         
         FileType::create([
-            'id' => 4,
             'name' => 'Acte d\'engagement',
             'no_of_files' => 1,
             'labels' => 'Acte d\'engagement',
@@ -49,7 +45,6 @@ class FileTypesSeeder extends Seeder
         ]);
         
         FileType::create([
-            'id' => 5,
             'name' => 'Bordereau des prix',
             'no_of_files' => 1,
             'labels' => 'Bordereau des prix',
@@ -58,7 +53,6 @@ class FileTypesSeeder extends Seeder
         ]);
         
         FileType::create([
-            'id' => 6,
             'name' => 'Déclaration sur l\'honneur',
             'no_of_files' => 1,
             'labels' => 'Déclaration sur l\'honneur',
@@ -67,7 +61,6 @@ class FileTypesSeeder extends Seeder
         ]);
         
         FileType::create([
-            'id' => 7,
             'name' => 'Dossier administratif',
             'no_of_files' => 1,
             'labels' => 'Dossier administratif',
@@ -76,7 +69,6 @@ class FileTypesSeeder extends Seeder
         ]);
         
         FileType::create([
-            'id' => 8,
             'name' => 'Offre financière',
             'no_of_files' => 1,
             'labels' => 'Offre financière',
@@ -85,7 +77,6 @@ class FileTypesSeeder extends Seeder
         ]);
         
         FileType::create([
-            'id' => 9,
             'name' => 'Dossier technique',
             'no_of_files' => 1,
             'labels' => 'Dossier technique',
@@ -94,7 +85,6 @@ class FileTypesSeeder extends Seeder
         ]);
         
         FileType::create([
-            'id' => 10,
             'name' => 'Décision de la commission d\'ouverture de plis',
             'no_of_files' => 1,
             'labels' => 'Décision de la commission d\'ouverture de plis',
@@ -103,7 +93,6 @@ class FileTypesSeeder extends Seeder
         ]);
         
         FileType::create([
-            'id' => 11,
             'name' => 'Journal/Avis (AR/FR)',
             'no_of_files' => 1,
             'labels' => 'Journal/Avis (AR/FR)',
@@ -112,7 +101,6 @@ class FileTypesSeeder extends Seeder
         ]);
         
         FileType::create([
-            'id' => 12,
             'name' => 'Estimation administrative',
             'no_of_files' => 1,
             'labels' => 'Estimation administrative',
@@ -121,13 +109,91 @@ class FileTypesSeeder extends Seeder
         ]);
         
         FileType::create([
-            'id' => 13,
             'name' => 'Caution provisoire',
             'no_of_files' => 1,
             'labels' => 'Caution provisoire',
             'file_validations' => 'mimes:jpeg,bmp,png,jpg,pdf',
             'file_maxsize' => 20,
         ]);
+
+        FileType::create([
+            'name' => 'Avis',
+            'no_of_files' => 1,
+            'labels' => 'Avis',
+            'file_validations' => 'mimes:jpeg,bmp,png,jpg,pdf',
+            'file_maxsize' => 20,
+        ]);
+
+        FileType::create([
+            'name' => 'PV',
+            'no_of_files' => 1,
+            'labels' => 'PV',
+            'file_validations' => 'mimes:jpeg,bmp,png,jpg,pdf',
+            'file_maxsize' => 20,
+        ]);
+
+        FileType::create([
+            'name' => 'Décision',
+            'no_of_files' => 1,
+            'labels' => 'Décision',
+            'file_validations' => 'mimes:jpeg,bmp,png,jpg,pdf',
+            'file_maxsize' => 20,
+        ]);
+
+        FileType::create([
+            'name' => 'Fax Complément',
+            'no_of_files' => 1,
+            'labels' => 'Fax Complément',
+            'file_validations' => 'mimes:jpeg,bmp,png,jpg,pdf',
+            'file_maxsize' => 20,
+        ]);
+
+        FileType::create([
+            'name' => 'Attestion main levée',
+            'no_of_files' => 1,
+            'labels' => 'Attestion main levée',
+            'file_validations' => 'mimes:jpeg,bmp,png,jpg,pdf',
+            'file_maxsize' => 20,
+        ]);
+
+        FileType::create([
+            'name' => 'Décompte de paiement',
+            'no_of_files' => 1,
+            'labels' => 'Décompte de paiement',
+            'file_validations' => 'mimes:jpeg,bmp,png,jpg,pdf',
+            'file_maxsize' => 20,
+        ]);
         
+        FileType::create([
+            'name' => 'Ordre de seuils',
+            'no_of_files' => 1,
+            'labels' => 'Ordre de seuils',
+            'file_validations' => 'mimes:jpeg,bmp,png,jpg,pdf',
+            'file_maxsize' => 20,
+        ]);
+
+        FileType::create([
+            'name' => 'Assurances',
+            'no_of_files' => 1,
+            'labels' => 'Assurances',
+            'file_validations' => 'mimes:jpeg,bmp,png,jpg,pdf',
+            'file_maxsize' => 20,
+        ]);
+
+        FileType::create([
+            'name' => 'Engagement dépenses',
+            'no_of_files' => 1,
+            'labels' => 'Engagement dépenses',
+            'file_validations' => 'mimes:jpeg,bmp,png,jpg,pdf',
+            'file_maxsize' => 20,
+        ]);
+
+        FileType::create([
+            'name' => 'Rapport de présentation',
+            'no_of_files' => 1,
+            'labels' => 'Rapport de présentation',
+            'file_validations' => 'mimes:jpeg,bmp,png,jpg,pdf',
+            'file_maxsize' => 20,
+        ]);
     }
 }
