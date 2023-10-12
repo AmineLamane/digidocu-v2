@@ -124,7 +124,7 @@
                 <div class="col-sm-12">
                     <div class="row">
                         <div class="col-sm-4">
-                            <label class="control-label">User</label><br>
+                            <label class="control-label">Utilisateur</label><br>
                             @foreach(config('constants.GLOBAL_PERMISSIONS.USERS') as $permission_name=>$permission_label)
                                 <div class="form-group">
                                     <label>
