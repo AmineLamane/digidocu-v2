@@ -81,7 +81,8 @@
                 @can('create', [\App\Document::class, $currenttag])
                     <a href="{{route('documents.create',['tag' => $_GET['tags']])}}"
                     class="btn btn-primary">
-                        <i class="fa fa-plus"></i>
+                    
+                        <i class="fa fa-file"></i>
                         Nouveau Fichier
                     </a>
                 @endcan
@@ -190,7 +191,7 @@
                             <div class="folder-shape-top bg-gray"></div>
                             <div class="box-header">
                                 <a href="{{route('documents.show',$document->id)}}" style="color: black;">
-                                    <h3 class="box-title"><i class="fa fa-folder text-yellow"></i></h3>
+                                    <h3 class="box-title"><i class="fa fa-file text-blue"></i></h3>
                                 </a>
 
                                 <div class="box-tools pull-right">
@@ -219,7 +220,6 @@
                                                 {!! Form::close() !!}
                                                 </li>
                                             @endcan
-
                                         </ul>
                                     </div>
                                 </div>
