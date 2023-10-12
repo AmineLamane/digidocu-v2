@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use Laracasts\Flash\Flash;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\DB;
 
 class DocumentController extends Controller
 {
@@ -86,23 +87,25 @@ class DocumentController extends Controller
             ->pluck('permissions', 'id')
             ->toArray();
         // Generate an array of permissions to check for each document.
-        $documentspermissions = Document::selectRaw('CONCAT("read document ", documents.id) as permissions, tags.id as tag_id')
-            ->join('documents_tags', 'documents.id', '=', 'documents_tags.document_id')
-            ->join('tags', 'documents_tags.tag_id', '=', 'tags.id')
-            ->whereIn('tags.id', $ancestorstocheck->pluck('id'))
-            ->pluck('permissions', 'tag_id')
-            ->toArray();
+        $documentspermissions = DB::table('documents')
+        ->select(DB::raw('CONCAT("read document ", documents.id) as permission'), 'tags.id as tag_id')
+        ->join('documents_tags', 'documents.id', '=', 'documents_tags.document_id')
+        ->join('tags', 'documents_tags.tag_id', '=', 'tags.id')
+        ->whereIn('documents_tags.tag_id', $ancestorstocheck->pluck('id'))
+        ->get()
+        ->toArray();
         // Check read permission in any tag in ancestorstocheck and its child.
         foreach ($permissionstocheck as $id => $permission) {
             if (Auth::user()->can($permission) && !in_array($id, array_column($ancestors, 'id'))) {
                 $ancestors[] = Tag::find($id);
             }
         }
-        foreach ($documentspermissions as $id => $permission) {
-            if (Auth::user()->can($permission) && !in_array($id, array_column($ancestors, 'id'))) {
-                $ancestors[] = Tag::find($id);
+        foreach ($documentspermissions as $permission) {
+            if (Auth::user()->can($permission->permission) && !in_array($id, array_column($ancestors, $permission->tag_id))) {
+                $ancestors[] = Tag::find($permission->tag_id);
             }
         }
+        
 
         foreach ($ancestorstocheck as $ancestor) {
             $children = $ancestor->children;
