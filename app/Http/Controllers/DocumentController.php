@@ -101,7 +101,7 @@ class DocumentController extends Controller
             }
         }
         foreach ($documentspermissions as $permission) {
-            if (Auth::user()->can($permission->permission) && !in_array($id, array_column($ancestors, $permission->tag_id))) {
+            if (Auth::user()->can($permission->permission) && !in_array($permission->tag_id ,array_column($ancestors, 'id'))){
                 $ancestors[] = Tag::find($permission->tag_id);
             }
         }
