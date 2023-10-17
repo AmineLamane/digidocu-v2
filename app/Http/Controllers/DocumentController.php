@@ -82,6 +82,9 @@ class DocumentController extends Controller
         }
         $ancestors = [];
         $ancestorstocheck = Tag::where('parent_id', $tagId)->get();
+        if($user->can('read documents')){
+            $ancestors = $ancestorstocheck;
+        }else{
         // Generate an array of permissions to check for each tag.
         $permissionstocheck = Tag::selectRaw('CONCAT("read documents in tag ", id) as permissions, id')
             ->whereIn('id', $ancestorstocheck->pluck('id'))
@@ -125,6 +128,7 @@ class DocumentController extends Controller
                     $ancestors[] = $tag;
                 }
             }
+        }
         }
         
         $tags = $tagId ? [$tagId] : [];

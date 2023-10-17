@@ -16,7 +16,7 @@
 <!-- Parent Field -->
 <div class="form-group col-sm-6 {{ $errors->has('parent_id') ? 'has-error' :'' }}">
     {!! Form::label('parent_id', 'Parent:') !!}
-    {!! Form::select('parent_id',$tags,null,['class'=>'form-control input-sm']) !!}
+    {!! Form::select('parent_id',$tags,null,['class'=>'form-control select2']) !!}
 </div>
 
 {{--additional Attributes--}}
