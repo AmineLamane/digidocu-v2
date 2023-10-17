@@ -73,7 +73,7 @@
                                 </p>
                             </div>
                             <div class="form-group">
-                                <label>Téléchargé à:</label>
+                                <label>Téléchargé le:</label>
                                 <p>@{{formatDate created_at}}</p>
                             </div>
                             @{{#each custom_fields}}
@@ -131,6 +131,13 @@
                 $("input[name='images']").val(selectedValues.join());
             });
             $("input[name='topdf_check[]']").trigger('ifToggled');
+        });
+        $(document).ready(function () {
+            $('#selectUserOrGroup').on('change', function () {
+                var selectedOption = $(this).find(':selected');
+                var selectedModelType = selectedOption.data('model-type');
+                $('input[name="model_type"]').val(selectedModelType);
+            });
         });
     </script>
 @stop
@@ -229,13 +236,13 @@
                             <label>Créé par:</label> {{$document->createdBy->name}}
                         </div>
                         <div class="form-group">
-                            <label>Créé à:</label>
+                            <label>Créé le:</label>
                             <p>{!! formatDateTime($document->created_at) !!} <br>
                                 ({{\Carbon\Carbon::parse($document->created_at)->locale('fr')->diffForHumans()}})
                             </p>
                         </div>
                         <div class="form-group">
-                            <label>Mis à jour à:</label>
+                            <label>Mis à jour le:</label>
                             <p>{!! formatDateTime($document->updated_at) !!} <br>
                                 ({{\Carbon\Carbon::parse($document->updated_at)->locale('fr')->diffForHumans()}})
                             </p>
@@ -395,12 +402,22 @@
                                                 <div class="modal-body">
                                                     <div class="row">
                                                         <div class="col-sm-12">
-                                                            <select class="form-control" name="user_id" required>
-                                                                <option value="">- Sélectionner l'utilisateur -</option>
-                                                                @foreach($users as $usr)
-                                                                    <option value="{{$usr->id}}">{{$usr->name}}({{$usr->username}})</option>
-                                                                @endforeach
-                                                            </select>
+                                                        <input type="hidden" name="model_type" value="">
+                                                        <select class="form-control" id="selectUserOrGroup" name="model_id" required>
+                                                            <option value="">- Sélectionner un utilisateur ou un groupe-</option>
+                                                            <option value="" disabled>-------------- Liste des utilisateurs --------------</option>
+                                                            @foreach($users as $usr)
+                                                                <option value="{{ $usr->id }}" data-model-type="user">
+                                                                    {{ $usr->name }} ({{ $usr->username }})
+                                                                </option>
+                                                            @endforeach
+                                                            <option value="" disabled>-------------- Liste des groupes --------------</option>
+                                                            @foreach($groups as $grp)
+                                                                <option value="{{ $grp->id }}" data-model-type="role">
+                                                                    {{ $grp->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
                                                         </div>
                                                         @foreach (config('constants.DOCUMENT_LEVEL_PERMISSIONS')  as $perm)
                                                             <div class="col-sm-6" style="margin-top: 20px;">
@@ -408,7 +425,7 @@
                                                                     <input name="document_permissions[{{$perm}}]"
                                                                            type="checkbox" class="iCheck-helper"
                                                                            value="1"> {{ucfirst($perm)}}
-                                                                    Ce {{config('settings.document_label_singular')}}
+                                                                    ce {{config('settings.document_label_singular')}}
                                                                 </label>
                                                             </div>
                                                         @endforeach
@@ -427,7 +444,7 @@
                                     <table class="table">
                                         <thead>
                                         <tr>
-                                            <th colspan="3" style="font-size: 1.8rem;">
+                                            <th colspan="4" style="font-size: 1.8rem;">
                                                 Permissions directes à ce dossier spécifique
                                                 <button type="button" class="btn btn-primary btn-xs pull-right" data-toggle="modal"
                                                         data-target="#modal-permission">
@@ -436,13 +453,14 @@
                                             </th>
                                         </tr>
                                         <tr>
-                                            <th>Utilisateur</th>
+                                            <th>Nom</th>
+                                            <th>Type</th>
                                             <th>Permissions</th>
                                             <th></th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        @if (count($thisDocPermissionUsers)==0)
+                                        @if (count($thisDocPermissionUsers)==0 && count($thisDocPermissionGroups)==0)
                                             <tr>
                                                 <td colspan="2">Aucun résultat trouvé</td>
                                             </tr>
@@ -450,6 +468,7 @@
                                         @foreach($thisDocPermissionUsers as $perm)
                                             <tr>
                                                 <td>{{$perm['user']->name}}</td>
+                                                <td>Utilisateur</td>
                                                 <td>
                                                     @foreach($perm['permissions'] as $item)
                                                         <label class="label label-default">{{$item}}</label>
@@ -457,6 +476,25 @@
                                                 </td>
                                                 <td>
                                                     {{Form::open(['route' => ['documents.delete-permission',request('document'),$perm['user']->id]])}}
+                                                    <button type="submit" class="btn btn-danger btn-xs"
+                                                            onclick="return conformDel(this,event)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                    {{Form::close()}}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        @foreach($thisDocPermissionGroups as $perm)
+                                            <tr>
+                                                <td>{{$perm['role']->name}}</td>
+                                                <td>Groupe</td>
+                                                <td>
+                                                    @foreach($perm['permissions'] as $item)
+                                                        <label class="label label-default">{{$item}}</label>
+                                                    @endforeach
+                                                </td>
+                                                <td>
+                                                    {{Form::open(['route' => ['documents.delete-permission-group',request('document'),$perm['role']->id]])}}
                                                     <button type="submit" class="btn btn-danger btn-xs"
                                                             onclick="return conformDel(this,event)">
                                                         <i class="fa fa-trash"></i>

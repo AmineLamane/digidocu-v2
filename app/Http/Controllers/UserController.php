@@ -48,8 +48,8 @@ class UserController extends AppBaseController
      */
     public function create()
     {
-        $tags = Tag::pluck('name', 'id');
         $this->authorize('create', User::class);
+        $tags = Tag::pluck('name', 'id');
         return view('users.create', compact('tags'));
     }
 

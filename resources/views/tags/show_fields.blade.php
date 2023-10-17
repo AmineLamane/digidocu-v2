@@ -30,7 +30,7 @@
 
 <!-- Created At Field -->
 <div class="form-group">
-    {!! Form::label('created_at', 'Crée à:') !!}
+    {!! Form::label('created_at', 'Crée le:') !!}
     <p>{{ $tag->created_at }}</p>
 </div>
 

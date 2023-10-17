@@ -10,23 +10,21 @@
             <input type="hidden" name="tags[]" value="{{$tagId}}">
         @endforeach
     @else
-        <input type="hidden" name="tags[]" value="{{$document->tags->pluck('id')->first()}}">
         <div class="form-group col-sm-6 ">
             <label for="tags[]">{{ucfirst(config('settings.tags_label_plural'))}}</label>
             <select class="form-control select2" id="tags"
                     name="tags[]"
-                    disabled>
+                    >
                 @foreach($tags as $tag)
-                    @canany (['update documents','update documents in tag '.$tag->id])
+                    @can('update', [$document, [$tag->id]]))
                         <option
                             value="{{$tag->id}}" {{(in_array($tag->id,old('tags', optional(optional(optional($document)->tags)->pluck('id'))->toArray() ?? [] )))?"selected":"" }}>{{$tag->name}}</option>
-                    @endcanany
+                    @endcan
                 @endforeach
             </select>
         </div>
     @endif
 @else
-
     <input type="hidden" name="tags[]" value="{{$gettag->id}}">
     <div class="form-group col-sm-6 {{ $errors->has("tags") ? 'has-error' :'' }}">
         <label for="tags">{{ucfirst(config('settings.tags_label_singular'))}}:</label>

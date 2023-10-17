@@ -175,6 +175,10 @@ class TagController extends AppBaseController
             Flash::error(ucfirst(config('settings.tags_label_singular')) . ' non trouvée');
             return redirect(route('tags.index'));
         }
+        if($tag->children->count() > 0){
+            Flash::error('Cette ' . config('settings.tags_label_singular') . ' a des sous ' . config('settings.tags_label_plural') . '. Veuillez les supprimer avant de réessayez');
+            return redirect(route('tags.index'));
+        }
         try {
             $this->tagRepository->deleteWithPermissions($tag);
         } catch (QueryException $e) {
@@ -182,7 +186,7 @@ class TagController extends AppBaseController
             return redirect(route('tags.index'));
         }
 
-        Flash::success(ucfirst(config('settings.tags_label_singular')) . ' supprimée ave succès.');
+        Flash::success(ucfirst(config('settings.tags_label_singular')) . ' supprimée avec succès.');
         return redirect(route('tags.index'));
     }
 }

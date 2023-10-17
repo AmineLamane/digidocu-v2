@@ -1,4 +1,4 @@
-@can('user manage permission')
+<!-- @can('user manage permission')
     <script id="permission-row" type="text/x-handlebars-template">
         <tr>
             <td>
@@ -43,7 +43,7 @@
             registerIcheck();
         }
     </script>
-@endcan
+@endcan -->
 <div class="box box-primary">
     <div class="box-header no-border">
         <h3 class="box-title">Détail d'utilisateur</h3>
@@ -110,7 +110,7 @@
     </div>
 </div>
 @can('user manage permission')
-    <div class="box box-primary">
+    <!-- <div class="box box-primary">
         <div class="box-header no-border">
             <h3 class="box-title">Permissions Globals</h3>
 
@@ -184,9 +184,9 @@
                             <th>Créer</th>
                             <th>Modifier</th>
                             <th>Supprimer</th>
-                            <!-- @foreach (config('constants.TAG_LEVEL_PERMISSIONS')  as $perm) -->
+                            @foreach (config('constants.TAG_LEVEL_PERMISSIONS')  as $perm) -->
                                 <!-- <th>{{ucfirst($perm)}}</th> -->
-                            <!-- @endforeach -->
+                            <!-- @endforeach
                         </tr>
                         </thead>
                         <tbody id="permission-body">
@@ -203,7 +203,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 @endcan
 <!-- Submit Field -->
 <div class="form-group">

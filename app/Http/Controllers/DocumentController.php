@@ -26,6 +26,7 @@ use Intervention\Image\Facades\Image;
 use Laracasts\Flash\Flash;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class DocumentController extends Controller
 {
@@ -244,14 +245,16 @@ class DocumentController extends Controller
         $breadcrumb = $this->generateBreadcrumb($gettag);
         $dataToRet = compact('document', 'missigDocMsgs', 'breadcrumb');
         if (auth()->user()->can('user manage permission')) {
+            $groups = Role::all();
             $users = User::where('id', '!=', 1)->get();
             $thisDocPermissionUsers = $this->permissionRepository->getUsersWiseDocumentLevelPermissionsForDoc($document);
+            $thisDocPermissionGroups = $this->permissionRepository->getGroupsWiseDocumentLevelPermissionsForDoc($document);
             //Tag Level permission
             $tagWisePermList = $this->permissionRepository->getTagWiseUsersPermissionsForDoc($document);
             //Global Permission
             $globalPermissionUsers = $this->permissionRepository->getGlobalPermissionsForDoc($document);
 
-            $dataToRet = array_merge($dataToRet, compact('users', 'thisDocPermissionUsers', 'tagWisePermList', 'globalPermissionUsers'));
+            $dataToRet = array_merge($dataToRet, compact('users','groups', 'thisDocPermissionUsers','thisDocPermissionGroups', 'tagWisePermList', 'globalPermissionUsers'));
         }
         
         
@@ -262,12 +265,22 @@ class DocumentController extends Controller
     {
         abort_if(!auth()->user()->can('user manage permission'), 403, 'Cette action n\'est pas autorisée .');
         $input = $request->all();
-        $user = User::findOrFail($input['user_id']);
-        $doc_permissions = $input['document_permissions'];
-        $document = Document::findOrFail($id);
-        $this->permissionRepository->setDocumentLevelPermissionForUser($user,$document,$doc_permissions);
-        Flash::success(ucfirst(config('settings.document_label_singular')) . " Permission allouée à l'utilisateur avec succès!");
-        return redirect()->back();
+        if($input['model_type'] == 'user'){
+            $user = User::findOrFail($input['model_id']);
+            $doc_permissions = $input['document_permissions'];
+            $document = Document::findOrFail($id);
+            $this->permissionRepository->setDocumentLevelPermissionForUser($user,$document,$doc_permissions);
+            Flash::success(ucfirst(config('settings.document_label_singular')) . " Permission allouée à l'utilisateur avec succès!");
+            return redirect()->back();
+        }elseif(($input['model_type'] == 'role')){
+            $role = Role::findOrFail($input['model_id']);
+            $doc_permissions = $input['document_permissions'];
+            $document = Document::findOrFail($id);
+            $this->permissionRepository->setDocumentLevelPermissionForGroup($role,$document,$doc_permissions);
+            Flash::success(ucfirst(config('settings.document_label_singular')) . " Permission allouée au groupe avec succès!");
+            return redirect()->back();
+        }
+        
     }
 
     public function deletePermission($documentId, $userId)
@@ -277,6 +290,15 @@ class DocumentController extends Controller
         $document = Document::findOrFail($documentId);
         $this->permissionRepository->deleteDocumentLevelPermissionForUser($document,$user);
         Flash::success(ucfirst(config('settings.document_label_singular')) . " Permission supprimée de l'utilisateur avec succès");
+        return redirect()->back();
+    }
+    public function deletePermissionGroup($documentId, $groupId)
+    {
+        abort_if(!auth()->user()->can('user manage permission'), 403, 'Cette action n\'est pas autorisée.');
+        $group = Role::findOrFail($groupId);
+        $document = Document::findOrFail($documentId);
+        $this->permissionRepository->deleteDocumentLevelPermissionForGroup($document,$group);
+        Flash::success(ucfirst(config('settings.document_label_singular')) . " Permission supprimée au groupe avec succès");
         return redirect()->back();
     }
 

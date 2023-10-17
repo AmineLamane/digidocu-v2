@@ -10843,8 +10843,8 @@ __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\pc\Documents\digidocu - adminlte\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\pc\Documents\digidocu - adminlte\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\pc\Documents\digidocu - adminlte - Copie\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\pc\Documents\digidocu - adminlte - Copie\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
