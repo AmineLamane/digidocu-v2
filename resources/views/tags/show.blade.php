@@ -44,7 +44,7 @@
                             <table class="table">
                                 <thead>
                                 <tr>
-                                    <th colspan="3" style="font-size: 1.8rem;">Permissions aux {{ucfirst(config('settings.document_label_plural'))}} de ce {{config('settings.tags_label_singular')}}</th>
+                                    <th colspan="3" style="font-size: 1.8rem;">Permissions aux {{ucfirst(config('settings.document_label_plural'))}} de cette {{config('settings.tags_label_singular')}}</th>
                                 </tr>
                                 <tr>
                                     <th>Utilisateur</th>

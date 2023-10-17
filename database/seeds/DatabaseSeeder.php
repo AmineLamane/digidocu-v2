@@ -15,7 +15,9 @@ class DatabaseSeeder extends Seeder
             SettingsTableSeeder::class,
             UsersTableSeeder::class,
             PermissionsTableSeeder::class,
-            FileTypesSeeder::class
+            FileTypesSeeder::class,
+            CustomFieldSeeder::class,
+            TagSeeder::class
         ]);
     }
 }

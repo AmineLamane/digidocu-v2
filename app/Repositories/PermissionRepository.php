@@ -7,6 +7,7 @@ namespace App\Repositories;
 use App\Document;
 use App\User;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class PermissionRepository extends BaseRepository
 {
@@ -37,6 +38,24 @@ class PermissionRepository extends BaseRepository
                     }
                 }
             }
+            $parent = $tag->parent?? [];
+            while (!empty($parent)) {
+                foreach (config('constants.TAG_LEVEL_PERMISSIONS') as $perm_key => $perm) {
+                    $usersTagWise = User::permission([$perm_key . $parent->id])->get();
+                    foreach ($usersTagWise as $item) {
+                        if (isset($tagWisePermList[$parent->id . '_' . $item->id])) {
+                            $tagWisePermList[$parent->id . '_' . $item->id]['permissions'][] = $perm;
+                        } else {
+                            $tagWisePermList[$parent->id . '_' . $item->id] = [
+                                'tag' => $parent,
+                                'user' => $item,
+                                'permissions' => [$perm]
+                            ];
+                        }
+                    }
+                }
+                $parent = $parent->parent;
+            }
         }
         return $tagWisePermList;
     }
@@ -52,7 +71,13 @@ class PermissionRepository extends BaseRepository
             $thisDocsPermList[] = $key . $document->id;
         }
         $retPermissions = [];
-        $users = User::permission($thisDocsPermList)->get();
+        $users = [];
+        $allusers = User::permission($thisDocsPermList)->get();
+        foreach($allusers as $user){
+            if($user->hasAnyDirectPermission($thisDocsPermList)){
+                $users[] = $user;
+            }
+        }
         foreach ($users as $user) {
             $retPermissions[] = [
                 'user'=>$user,
@@ -60,6 +85,40 @@ class PermissionRepository extends BaseRepository
             ];
             foreach (config('constants.DOCUMENT_LEVEL_PERMISSIONS') as $perm_key => $value) {
                 if ($user->can($perm_key.$document->id)) {
+                    $retPermissions[count($retPermissions)-1]['permissions'][] = $value;
+                }
+            }
+        }
+        return $retPermissions;
+    }
+
+    public function getGroupsWiseDocumentLevelPermissionsForDoc($document)
+    {
+        $thisDocsPermList = [];
+        foreach (config('constants.DOCUMENT_LEVEL_PERMISSIONS') as $key => $item) {
+            $thisDocsPermList[] = $key . $document->id;
+        }
+        $retPermissions = [];
+        $roles = Role::all();
+        $roleshasperm = [];
+        $uniqueRoles = [];
+
+        foreach ($thisDocsPermList as $docperm) {
+            foreach ($roles as $role) {
+                if ($role->hasPermissionTo($docperm) && !isset($uniqueRoles[$role->id])) {
+                    $uniqueRoles[$role->id] = $role;
+                    $roleshasperm[] = $role;
+                }
+            }
+        }
+        
+        foreach ($roleshasperm as $role) {
+            $retPermissions[] = [
+                'role'=>$role,
+                'permissions'=>[]
+            ];
+            foreach (config('constants.DOCUMENT_LEVEL_PERMISSIONS') as $perm_key => $value) {
+                if ($role->hasPermissionTo($perm_key.$document->id)) {
                     $retPermissions[count($retPermissions)-1]['permissions'][] = $value;
                 }
             }
@@ -125,21 +184,40 @@ class PermissionRepository extends BaseRepository
                 if (!$flag) {
                     $permissions[] = $perm_key . $document->id;
                 }
-            }
+            
         }
 
         if ($permissions) {
             $user->givePermissionTo($permissions);
         }
     }
+    }
+    public function setDocumentLevelPermissionForGroup($group, $document, $doc_permissions)
+    {
+        $permissions = [];
+        foreach (config('constants.DOCUMENT_LEVEL_PERMISSIONS') as $perm_key => $perm) {
+            if (isset($doc_permissions[$perm])) {
+                $permissions[] = $perm_key . $document->id;
+            }
+        }
+
+        if ($permissions) {
+            foreach($permissions as $permission){
+                if(!$group->hasPermissionTo($permission)){
+                    $group->givePermissionTo($permission);
+                }
+            }
+            
+        }
+    }
 
     public function getGlobalPermissionsModelWiseForUser($user)
     {
         $permissions = [];
-        $permissions['Users']=[];
+        $permissions['Utilisateurs']=[];
         foreach (config('constants.GLOBAL_PERMISSIONS.USERS') as $perm_key => $perm) {
             if($user->can($perm_key)){
-                $permissions['Users']['permissions'][] = $perm;
+                $permissions['Utilisateurs']['permissions'][] = $perm;
             }
         }
 
@@ -154,6 +232,35 @@ class PermissionRepository extends BaseRepository
         $permissions[ucfirst(config('settings.document_label_plural'))]=[];
         foreach (config('constants.GLOBAL_PERMISSIONS.DOCUMENTS') as $perm_key => $perm) {
             if($user->can($perm_key)){
+                $permissions[ucfirst(config('settings.document_label_plural'))]['permissions'][]
+                    = $perm;
+            }
+        }
+
+        return $permissions;
+    }
+
+    public function getGlobalPermissionsModelWiseForGroup($group)
+    {
+        $permissions = [];
+        $permissions['Utilisateurs']=[];
+        foreach (config('constants.GLOBAL_PERMISSIONS.USERS') as $perm_key => $perm) {
+            if($group->hasPermissionTo($perm_key)){
+                $permissions['Utilisateurs']['permissions'][] = $perm;
+            }
+        }
+
+        $permissions[ucfirst(config('settings.tags_label_plural'))]=[];
+        foreach (config('constants.GLOBAL_PERMISSIONS.TAGS') as $perm_key => $perm) {
+            if($group->hasPermissionTo($perm_key)){
+                $permissions[ucfirst(config('settings.tags_label_plural'))]['permissions'][]
+                    = $perm;
+            }
+        }
+
+        $permissions[ucfirst(config('settings.document_label_plural'))]=[];
+        foreach (config('constants.GLOBAL_PERMISSIONS.DOCUMENTS') as $perm_key => $perm) {
+            if($group->hasPermissionTo($perm_key)){
                 $permissions[ucfirst(config('settings.document_label_plural'))]['permissions'][]
                     = $perm;
             }
@@ -177,6 +284,19 @@ class PermissionRepository extends BaseRepository
             }
         }
         $user->revokePermissionTo($permissions);
+    }
+
+    public function deleteDocumentLevelPermissionForGroup($document, $group)
+    {
+        $permissions = [];
+        foreach (config('constants.DOCUMENT_LEVEL_PERMISSIONS') as $perm_key => $perm) {
+            if ($group->hasPermissionTo($perm_key . $document->id)) {
+                $permissions[] = $perm_key . $document->id;
+            }
+        }
+        foreach($permissions as $permission){
+            $group->revokePermissionTo($permission);
+        }
     }
 
     /**

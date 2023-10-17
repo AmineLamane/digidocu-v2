@@ -36,14 +36,14 @@
 
 <!-- Created At Field -->
 <div class="form-group">
-    {!! Form::label('created_at', 'Créé par:') !!}
+    {!! Form::label('created_at', 'Créé le:') !!}
     <p>{{ formatDateTime($customField->created_at) }}</p>
 </div>
 
 
 <!-- Updated At Field -->
 <div class="form-group">
-    {!! Form::label('updated_at', 'Mis à jour à:') !!}
+    {!! Form::label('updated_at', 'Mis à jour le:') !!}
     <p>{{ formatDateTime($customField->updated_at) }}</p>
 </div>
 

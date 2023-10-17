@@ -11,28 +11,40 @@
         @endforeach
     @else
         <div class="form-group col-sm-6 ">
-            <label for="tags[]">{{ucfirst(config('settings.tags_label_plural'))}}:</label>
+            <label for="tags[]">{{ucfirst(config('settings.tags_label_plural'))}}</label>
             <select class="form-control select2" id="tags"
                     name="tags[]"
-                    multiple>
+                    >
                 @foreach($tags as $tag)
-                    @canany (['update documents','update documents in tag '.$tag->id])
+                    @can('update', [$document, [$tag->id]]))
                         <option
                             value="{{$tag->id}}" {{(in_array($tag->id,old('tags', optional(optional(optional($document)->tags)->pluck('id'))->toArray() ?? [] )))?"selected":"" }}>{{$tag->name}}</option>
-                    @endcanany
+                    @endcan
                 @endforeach
             </select>
         </div>
     @endif
 @else
+    <input type="hidden" name="tags[]" value="{{$gettag->id}}">
     <div class="form-group col-sm-6 {{ $errors->has("tags") ? 'has-error' :'' }}">
-        <label for="tags[]">{{ucfirst(config('settings.tags_label_plural'))}}:</label>
-        <select class="form-control select2" id="tags" name="tags[]" multiple>
+        <label for="tags">{{ucfirst(config('settings.tags_label_singular'))}}:</label>
+        <select class="form-control select2" id="tags" name="tags[]" disabled>
             @foreach($tags as $tag)
                 @canany (['create documents','create documents in tag '.$tag->id])
+                    @if($tag->id == $gettag->id)
                     <option
-                        value="{{$tag->id}}" {{(in_array($tag->id,old('tags', optional(optional(optional($document)->tags)->pluck('id'))->toArray() ?? [] )))?"selected":"" }}>{{$tag->name}}</option>
+                    value="{{$tag->id}}" selected>{{$tag->name}}</option>
+                    @endif
                 @endcanany
+                
+                @foreach($parents as $parent)
+                @can('create documents in tag '.$parent)
+                    @if($tag->id == $gettag->id)
+                    <option
+                    value="{{$tag->id}}" selected>{{$tag->name}}</option>
+                    @endif
+                @endcan
+                @endforeach
             @endforeach
         </select>
         {!! $errors->first("tags",'<span class="help-block">:message</span>') !!}
@@ -55,5 +67,9 @@
 <div class="form-group col-sm-12">
     {!! Form::submit('Sauvegarder', ['class' => 'btn btn-primary']) !!}
     {!! Form::submit('Sauvegarder et Uploader', ['class' => 'btn btn-primary','name'=>'savnup']) !!}
-    <a href="{!! route('documents.index') !!}" class="btn btn-default">Annuler</a>
+    @if($document)
+    <a href="{!! route('documents.show',$document->id) !!}" class="btn btn-default">Annuler</a>
+    @else
+    <a href="{!! route('documents.index',['tags' => $gettag->id]) !!}" class="btn btn-default">Annuler</a>
+    @endif
 </div>

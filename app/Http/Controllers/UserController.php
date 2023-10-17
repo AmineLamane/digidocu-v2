@@ -48,8 +48,8 @@ class UserController extends AppBaseController
      */
     public function create()
     {
-        $tags = Tag::pluck('name', 'id');
         $this->authorize('create', User::class);
+        $tags = Tag::pluck('name', 'id');
         return view('users.create', compact('tags'));
     }
 
@@ -177,6 +177,7 @@ class UserController extends AppBaseController
         /** @var User $user */
         $user = $this->userRepository->update($data, $id);
         //give selected permission to users
+        
         if (\Auth::user()->can('user manage permission')) {
             $permissions = $this->mapInputToPermissions($data);
             $docsPermissions = [];//also allocate doc level permissions.

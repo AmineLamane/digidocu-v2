@@ -25,6 +25,15 @@
     <p>{{ $user->address }}</p>
 </div>
 
+<!-- Address Field -->
+<div class="form-group">
+    {!! Form::label('address', 'Groupes:') !!}
+    <ul>
+    @foreach($user->getRoleNames() as $role)
+        <li>{{ $role }}</li>
+    @endforeach
+    </ul>
+</div>
 
 <!-- Description Field -->
 <div class="form-group">
@@ -46,13 +55,13 @@
 
 <!-- Created Field -->
 <div class="form-group">
-    {!! Form::label('created_at', 'Crée à:') !!}
+    {!! Form::label('created_at', 'Crée le:') !!}
     <p>{{ formatDateTime($user->created_at) }}</p>
 </div>
 
 <!-- Created Field -->
 <div class="form-group">
-    {!! Form::label('updated_at', 'Mis à jour à:') !!}
+    {!! Form::label('updated_at', 'Mis à jour le:') !!}
     <p>{{ formatDateTime($user->updated_at) }}</p>
 </div>
 

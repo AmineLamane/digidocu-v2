@@ -59,7 +59,11 @@ class DocumentPolicy
         //check read permission in any tag
         $tagPermissions = [];
         foreach ($document->tags as $tag) {
-            $tagPermissions[] = 'read documents in tag ' . $tag->id;
+            $currentTag = $tag;
+            while ($currentTag) {
+                $tagPermissions[] = 'read documents in tag ' . $currentTag->id;
+                $currentTag = $currentTag->parent; // Move to the parent tag.
+            }
         }
         if ($user->hasAnyPermission($tagPermissions)) {
             return true;
@@ -74,15 +78,24 @@ class DocumentPolicy
      * @return bool
      * @throws \Exception
      */
-    public function create(User $user)
+    public function create(User $user,Tag $tag)
     {
         if ($user->can('create documents')) {
             return true;
         }
 
-        //check create permission in any tag
-        $tagsPermissions = Tag::selectRaw('CONCAT("create documents in tag ",id) as permissions')->pluck('permissions')->toArray();
-        if ($user->hasAnyPermission($tagsPermissions)) {
+       // Initialize an array to store the permissions to check.
+        $permissionsToCheck = [];
+
+        // Iterate through the tag and its parents (if they exist) and generate permissions to check.
+        $currentTag = $tag;
+        while ($currentTag) {
+            $permissionsToCheck[] = "create documents in tag " . $currentTag->id;
+            $currentTag = $currentTag->parent; // Move to the parent tag.
+        }
+
+        // Check if the user has any of the permissions in the hierarchy.
+        if ($user->hasAnyPermission($permissionsToCheck)) {
             return true;
         }
 
@@ -102,12 +115,15 @@ class DocumentPolicy
             return true;
         }
 
-        //check create permission in all tags
-        $tagPermissions = [];
-        foreach ($tags as $tag) {
-            $tagPermissions[] = 'create documents in tag ' . $tag;
+        $tagId = $tags[0];
+        $currentTag = Tag::find($tagId); // Assuming you can retrieve a Tag model by ID.
+        while ($currentTag) {
+            $tagPermissions[] = 'create documents in tag ' . $currentTag->id;
+            $currentTag = $currentTag->parent; // Move to the parent tag.
         }
-        if ($user->hasAllPermissions($tagPermissions)) {
+        
+        // Check if the user has all the required permissions.
+        if ($user->hasAnyPermission($tagPermissions)) {
             return true;
         }
 
@@ -135,9 +151,13 @@ class DocumentPolicy
         //check update permission in all tag
         $tagPermissions = [];
         foreach ($document->tags as $tag) {
-            $tagPermissions[] = 'update documents in tag ' . $tag->id;
+            $currentTag = $tag;
+            while ($currentTag) {
+                $tagPermissions[] = 'update documents in tag ' . $currentTag->id;
+                $currentTag = $currentTag->parent; // Move to the parent tag.
+            }
         }
-        if ($user->hasAllPermissions($tagPermissions)) {
+        if ($user->hasAnyPermission($tagPermissions)) {
             return true;
         }
 
@@ -162,13 +182,16 @@ class DocumentPolicy
         if ($user->can("update document " . $document->id)) {
             return true;
         }
-
         //check update permission in all tag
         $tagPermissions = [];
         foreach ($tags as $tag) {
-            $tagPermissions[] = 'update documents in tag ' . $tag;
+            $currentTag = Tag::find($tag);
+            while ($currentTag) {
+                $tagPermissions[] = 'update documents in tag ' . $currentTag->id;
+                $currentTag = $currentTag->parent; // Move to the parent tag.
+            }
         }
-        if ($user->hasAllPermissions($tagPermissions)) {
+        if ($user->hasAnyPermission($tagPermissions)) {
             return true;
         }
 
@@ -194,13 +217,16 @@ class DocumentPolicy
         if ($user->can("delete document " . $document->id)) {
             return true;
         }
-
         //check update permission in all tag
         $tagPermissions = [];
         foreach ($document->tags as $tag) {
-            $tagPermissions[] = 'delete documents in tag ' . $tag->id;
+            $currentTag = $tag;
+            while ($currentTag) {
+                $tagPermissions[] = 'delete documents in tag ' . $currentTag->id;
+                $currentTag = $currentTag->parent; // Move to the parent tag.
+            }
         }
-        if ($user->hasAllPermissions($tagPermissions)) {
+        if ($user->hasAnyPermission($tagPermissions)) {
             return true;
         }
 
@@ -225,13 +251,16 @@ class DocumentPolicy
         if ($user->can("verify document " . $document->id)) {
             return true;
         }
-
         //check verify permission in all tag
         $tagPermissions = [];
         foreach ($document->tags as $tag) {
-            $tagPermissions[] = 'verify documents in tag ' . $tag->id;
+            $currentTag = $tag;
+            while ($currentTag) {
+                $tagPermissions[] = 'verify documents in tag ' . $currentTag->id;
+                $currentTag = $currentTag->parent; // Move to the parent tag.
+            }
         }
-        if ($user->hasAllPermissions($tagPermissions)) {
+        if ($user->hasAnyPermission($tagPermissions)) {
             return true;
         }
 

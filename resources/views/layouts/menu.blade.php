@@ -3,7 +3,12 @@
 </li>
 @can('read users')
     <li class="{{ Request::is('admin/users*') ? 'active' : '' }}">
-        <a href="{!! route('users.index') !!}"><i class="fa fa-users"></i><span>Utilisateurs</span></a>
+        <a href="{!! route('users.index') !!}"><i class="fa fa-user"></i><span>Utilisateurs</span></a>
+    </li>
+@endcan
+@can(['user manage permission','update users'])
+    <li class="{{ Request::is('admin/groups*') ? 'active' : '' }}">
+        <a href="{!! route('groups.index') !!}"><i class="fa fa-users"></i><span>Groupes</span></a>
     </li>
 @endcan
 @can('read tags')

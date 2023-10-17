@@ -2,11 +2,12 @@
 
 namespace App\DataTables;
 
-use App\Tag;
-use Yajra\DataTables\EloquentDataTable;
+use App\User;
+use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Services\DataTable;
+use Yajra\DataTables\EloquentDataTable;
 
-class TagDataTable extends DataTable
+class GroupDataTable extends DataTable
 {
     /**
      * Build DataTable class.
@@ -17,31 +18,19 @@ class TagDataTable extends DataTable
     public function dataTable($query)
     {
         $dataTable = new EloquentDataTable($query);
-        $dataTable = $dataTable->addColumn('action', 'tags.datatables_actions')
-            ->addColumn('created_by', function (Tag $tag) {
-                return $tag->createdBy->name;
-            })->addColumn('parent', function (Tag $tag) {
-                return $tag->parent ? $tag->parent->name : '';
-            })->editColumn('color', function (Tag $tag) {
-                return '<span class="label" style="background-color: ' . $tag->color . '">' . $tag->color . '</span>';
-            })->rawColumns(['color'], true)
-            ->filterColumn('created_by', function ($query, $keyword) {
-                return $query->whereRaw("select count(*) from users where lower(users.name) like ? and users.id=tags.created_by",["%$keyword%"]);
-            });
-
-        return $dataTable;
+        return $dataTable->addColumn('action', 'groups.datatables_actions')
+            ->rawColumns(['action']);
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param \App\Models\Tag $model
+     * @param Spatie\Permission\Models\Role $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function query(Tag $model)
+    public function query(Role $model)
     {
-        $query = $model->newQuery()->with(['createdBy','parent']);
-        return $query;
+        return $model->newQuery();
     }
 
     /**
@@ -53,15 +42,13 @@ class TagDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->addColumn(['data' => 'parent', 'title' => 'Parent'])
-            ->addColumn(['data' => 'created_by', 'title' => 'Crée par'])
             ->minifiedAjax()
-            ->addAction(['width' => '120px', 'printable' => false , 'title' => 'Actions'])
+            ->addAction(['width' => '120px', 'printable' => false, 'title' => 'Actions'])
             ->parameters([
-                'dom' => 'Bfrtip',
+                'dom'       => 'Bfrtip',
                 'stateSave' => true,
-                'order' => [[0, 'desc']],
-                'buttons' => [
+                'order'     => [[0, 'desc']],
+                'buttons'   => [
                     ['extend' => 'export', 'className' => 'btn btn-default btn-sm no-corner', 'text' => '<i class="fa fa-download"></i> Exporter <span class="caret"/>'],
                     ['extend' => 'print', 'className' => 'btn btn-default btn-sm no-corner', 'text' => '<i class="fa fa-print"></i> Imprimer'],
                     ['extend' => 'reset', 'className' => 'btn btn-default btn-sm no-corner', 'text' => '<i class="fa fa-undo"></i> Réinitialiser'],
@@ -103,7 +90,6 @@ class TagDataTable extends DataTable
         return [
             'id' => ['title' => 'Id'],
             'name' => ['title' => 'Nom'],
-            'color' => ['title' => 'Couleur']
         ];
     }
 
@@ -114,6 +100,6 @@ class TagDataTable extends DataTable
      */
     protected function filename()
     {
-        return 'tagsdatatable_' . time();
+        return 'groupsdatatable_' . time();
     }
 }

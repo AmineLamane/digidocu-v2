@@ -6,19 +6,13 @@
             Utilisateurs
         </h1>
         <span class="pull-right">
-            <a href="{{ route('users.index') }}" class="btn btn-default">
+            <a href="{{ route('groups.index') }}" class="btn btn-default">
                 <i class="fa fa-chevron-left" aria-hidden="true"></i> Retour
             </a>
-            @can('update users')
-            <a href="{{ route('users.edit',$user->id) }}" class="btn btn-primary">
+            <a href="{{ route('groups.edit',$group->id) }}" class="btn btn-primary">
                 <i class="fa fa-edit" aria-hidden="true"></i> Editer
             </a>
-            <a href="{{ route('users.blockUnblock', $user->id) }}" class="btn btn-warning">
-                <i class="fa fa-ban"></i> Bloquer / Débloquer
-            </a>
-            @endcan
-            @can('delete users')
-            {!! Form::open(['route' => ['users.destroy', $user->id], 'method' => 'delete','style'=>'display:inline']) !!}
+            {!! Form::open(['route' => ['groups.destroy', $group->id], 'method' => 'delete','style'=>'display:inline']) !!}
             {!! Form::button('<i class="fa fa-trash"></i> Supprimer', [
             'type' => 'submit',
             'title' => 'Delete',
@@ -26,7 +20,6 @@
             'onclick' => "return conformDel(this,event)",
             ]) !!}
             {!! Form::close() !!}
-            @endcan
         </span>
     </section>
     <div class="content">
@@ -35,19 +28,17 @@
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
                         <li class="active"><a href="#user" data-toggle="tab"
-                                              aria-expanded="true">Utilisateur</a>
+                                              aria-expanded="true">Groupe</a>
                         </li>
-                        @can('user manage permission')
-                            <li class=""><a href="#tab_permissions" data-toggle="tab"
-                                            aria-expanded="false">Permission</a>
-                            </li>
-                        @endcan
+                        <li class=""><a href="#tab_permissions" data-toggle="tab"
+                                        aria-expanded="false">Permission</a>
+                        </li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="user">
-                            @include('users.show_fields')
+                            @include('groups.show_fields')
                         </div>
-                        @can('user manage permission')
+                        @can('user manage permission','update users')
                             <div class="tab-pane" id="tab_permissions">
                             <table class="table">
                                 <thead>
@@ -62,7 +53,10 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @if ($user->hasAnyPermission(array_keys(config('constants.GLOBAL_PERMISSIONS.USERS'))) || $user->hasAnyPermission(array_keys(config('constants.GLOBAL_PERMISSIONS.TAGS'))) || $user->hasAnyPermission(array_keys(config('constants.GLOBAL_PERMISSIONS.DOCUMENTS'))))
+                                @if (
+                                    !empty($globalPermissions['Utilisateurs']) ||
+                                    !empty($globalPermissions[ucfirst(config('settings.tags_label_plural'))]) ||
+                                    !empty($globalPermissions[ucfirst(config('settings.document_label_plural'))]))
                                     @foreach ($globalPermissions as $key=>$p)
                                         <tr>
                                             <td>
@@ -108,21 +102,20 @@
                                         </td>
                                         <td>
                                             @foreach(config('constants.TAG_LEVEL_PERMISSIONS') as $perm_key=>$perm)
-                                                @if ($user->can($perm_key.$tag->id))
+                                                @if ($group->hasPermissionTo($perm_key.$tag->id))
                                                     <label class="label label-default">
                                                         <!-- {{$perm}} -->
-                                                        @if($perm == 'create')
-                                                            Créer
-                                                        @endif
                                                         @if($perm == 'read')
-                                                            Consulter
+                                                            consulter
                                                         @endif
-                                                        
+                                                        @if($perm == 'create')
+                                                            créer
+                                                        @endif
                                                         @if($perm == 'update')
-                                                            Modifier
+                                                            codifier
                                                         @endif
                                                         @if($perm == 'delete')
-                                                            Supprimer
+                                                            cupprimer
                                                         @endif
                                                     </label>
                                                 @endif
@@ -157,7 +150,7 @@
                                         </td>
                                         <td>
                                             @foreach(config('constants.DOCUMENT_LEVEL_PERMISSIONS') as $perm_key=>$perm)
-                                                @if ($user->can($perm_key.$document->id))
+                                                @if ($group->hasPermissionTo($perm_key.$document->id))
                                                     <label class="label label-default">{{$perm}}</label>
                                                 @endif
                                             @endforeach

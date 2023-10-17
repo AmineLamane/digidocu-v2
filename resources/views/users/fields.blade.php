@@ -1,4 +1,4 @@
-@can('user manage permission')
+<!-- @can('user manage permission')
     <script id="permission-row" type="text/x-handlebars-template">
         <tr>
             <td>
@@ -43,7 +43,7 @@
             registerIcheck();
         }
     </script>
-@endcan
+@endcan -->
 <div class="box box-primary">
     <div class="box-header no-border">
         <h3 class="box-title">Détail d'utilisateur</h3>
@@ -57,7 +57,7 @@
         <div class="row">
             <!-- Name Field -->
             <div class="form-group col-sm-6 {{ $errors->has('name') ? 'has-error' :'' }}">
-                {!! Form::label('name', 'Nom Complet:') !!}
+                {!! Form::label('name', 'Nom Complet*:') !!}
                 {!! Form::text('name', null, ['class' => 'form-control']) !!}
                 {!! $errors->first('name','<span class="help-block">:message</span>') !!}
             </div>
@@ -73,7 +73,7 @@
 
             <!-- Username Field -->
             <div class="form-group col-sm-6 {{ $errors->has('username') ? 'has-error' :'' }}">
-                {!! Form::label('username', 'Nom d\'utilisateur:') !!}
+                {!! Form::label('username', 'Nom d\'utilisateur*:') !!}
                 {!! Form::text('username', null, ['class' => 'form-control']) !!}
                 {!! $errors->first('username','<span class="help-block">:message</span>') !!}
             </div>
@@ -88,14 +88,14 @@
 
             <!-- Password Field -->
             <div class="form-group col-sm-6 {{ $errors->has('password') ? 'has-error' :'' }}">
-                {!! Form::label('password', 'Mot de passe:') !!}
+                {!! Form::label('password', 'Mot de passe*:') !!}
                 {!! Form::text('password', null, ['class' => 'form-control']) !!}
                 {!! $errors->first('password','<span class="help-block">:message</span>') !!}
             </div>
 
             {{--Status Filed--}}
             <div class="form-group col-sm-6 {{ $errors->has('status') ? 'has-error' :'' }}">
-                {!! Form::label('status', 'Status:') !!}
+                {!! Form::label('status', 'Status*:') !!}
                 {!! Form::select('status', [config('constants.STATUS.ACTIVE') => config('constants.STATUS.ACTIVE'), config('constants.STATUS.BLOCK') => config('constants.STATUS.BLOCK')],null, ['class'=>'form-control']); !!}
                 {!! $errors->first('status','<span class="help-block">:message</span>') !!}
             </div>
@@ -110,7 +110,7 @@
     </div>
 </div>
 @can('user manage permission')
-    <div class="box box-primary">
+    <!-- <div class="box box-primary">
         <div class="box-header no-border">
             <h3 class="box-title">Permissions Globals</h3>
 
@@ -124,7 +124,7 @@
                 <div class="col-sm-12">
                     <div class="row">
                         <div class="col-sm-4">
-                            <label class="control-label">User</label><br>
+                            <label class="control-label">Utilisateur</label><br>
                             @foreach(config('constants.GLOBAL_PERMISSIONS.USERS') as $permission_name=>$permission_label)
                                 <div class="form-group">
                                     <label>
@@ -184,9 +184,9 @@
                             <th>Créer</th>
                             <th>Modifier</th>
                             <th>Supprimer</th>
-                            <!-- @foreach (config('constants.TAG_LEVEL_PERMISSIONS')  as $perm) -->
+                            @foreach (config('constants.TAG_LEVEL_PERMISSIONS')  as $perm) -->
                                 <!-- <th>{{ucfirst($perm)}}</th> -->
-                            <!-- @endforeach -->
+                            <!-- @endforeach
                         </tr>
                         </thead>
                         <tbody id="permission-body">
@@ -195,7 +195,7 @@
                         <tfoot>
                         <tr>
                             <td colspan="6">
-                                <button type="button" onclick="addRow()" class="btn btn-info btn-xs">Ajouter un nouveau {{config('settings.tags_label_singular')}}</button>
+                                <button type="button" onclick="addRow()" class="btn btn-info btn-xs">Ajouter une nouvelle {{config('settings.tags_label_singular')}}</button>
                             </td>
                         </tr>
                         </tfoot>
@@ -203,7 +203,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 @endcan
 <!-- Submit Field -->
 <div class="form-group">

@@ -32,7 +32,7 @@ function conformDel(aa, event) {
         title: "Êtes-vous sûr?",
         text: "Une fois vous cliquez, l'action est irréversible!",
         icon: "error",
-        buttons: true,
+        buttons: ["Annuler", "Confirmer"],
         dangerMode: true,
     }).then((willDelete) => {
         if (willDelete) {

@@ -50,8 +50,10 @@ class TagController extends AppBaseController
     public function create()
     {
         $this->authorize('create', Tag::class);
+        $tags = Tag::pluck('name','id')->toArray();
+        $tags = [null => null] + $tags;
         $customFields = CustomField::where('model_type', 'tags')->get();
-        return view('tags.create', compact('customFields'));
+        return view('tags.create', compact(['customFields','tags']));
     }
 
     /**
@@ -66,7 +68,6 @@ class TagController extends AppBaseController
         $this->authorize('create', Tag::class);
         $input = $request->all();
         $input['created_by'] = Auth::id();
-
         $tag = $this->tagRepository->create($input);
 
         //create permissions for new tag
@@ -121,14 +122,15 @@ class TagController extends AppBaseController
         $tag = $this->tagRepository->find($id);
         $this->authorize('update', $tag);
         $customFields = CustomField::where('model_type', 'tags')->get();
-
+        $tags = Tag::pluck('name','id')->except('id',$id)->toArray();
+        $tags = [null => null] + $tags;
         if (empty($tag)) {
             Flash::error(ucfirst(config('settings.tags_label_singular')) . ' non trouvée');
 
             return redirect(route('tags.index'));
         }
 
-        return view('tags.edit')->with('tag', $tag)->with('customFields', $customFields);
+        return view('tags.edit',compact('tag','tags','customFields'));
     }
 
     /**
@@ -173,14 +175,18 @@ class TagController extends AppBaseController
             Flash::error(ucfirst(config('settings.tags_label_singular')) . ' non trouvée');
             return redirect(route('tags.index'));
         }
+        if($tag->children->count() > 0){
+            Flash::error('Cette ' . config('settings.tags_label_singular') . ' a des sous ' . config('settings.tags_label_plural') . '. Veuillez les supprimer avant de réessayez');
+            return redirect(route('tags.index'));
+        }
         try {
             $this->tagRepository->deleteWithPermissions($tag);
         } catch (QueryException $e) {
-            Flash::error('Ce ' . config('settings.tags_label_singular') . ' a des ' . config('settings.document_label_plural') . '. Veuillez les supprimer avant de réessayez');
+            Flash::error('Cette ' . config('settings.tags_label_singular') . ' a des ' . config('settings.document_label_plural') . '. Veuillez les supprimer avant de réessayez');
             return redirect(route('tags.index'));
         }
 
-        Flash::success(ucfirst(config('settings.tags_label_singular')) . ' supprimée ave succès.');
+        Flash::success(ucfirst(config('settings.tags_label_singular')) . ' supprimée avec succès.');
         return redirect(route('tags.index'));
     }
 }
