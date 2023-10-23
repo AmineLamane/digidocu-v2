@@ -109,13 +109,13 @@ class DocumentController extends Controller
                 $ancestors[] = Tag::find($permission->tag_id);
             }
         }
-        
+
 
         foreach ($ancestorstocheck as $ancestor) {
             $children = $ancestor->children;
             $this->checkChildPermissions($children, $ancestor, $ancestors);
         }
-        
+
         foreach ($ancestorstocheck as $tag) {
             $tagPermissions = [];
             $currentTag = $tag;
@@ -130,7 +130,7 @@ class DocumentController extends Controller
             }
         }
         }
-        
+
         $tags = $tagId ? [$tagId] : [];
         array_push($tags,$request->tags);
         $documents = $this->documentRepository->searchDocuments(
@@ -153,13 +153,17 @@ class DocumentController extends Controller
                     $query->where('id', $child->id);
                 })->pluck('permissions', 'id')
                 ->toArray();
-                $permissionstocheck+= $documentspermissions;
                 foreach ($permissionstocheck as $id => $permission) {
                     if (Auth::user()->can($permission) && !in_array($ancestor->id, array_column($ancestors, 'id'))) {
                         $ancestors[] = $ancestor;
                     }
                 }
-    
+                foreach ($documentspermissions as $id => $permission) {
+                    if (Auth::user()->can($permission) && !in_array($ancestor->id, array_column($ancestors, 'id'))) {
+                        $ancestors[] = $ancestor;
+                    }
+                }
+
                 $this->checkChildPermissions($child->children, $ancestor, $ancestors);
             }
         }
@@ -260,8 +264,8 @@ class DocumentController extends Controller
 
             $dataToRet = array_merge($dataToRet, compact('users','groups', 'thisDocPermissionUsers','thisDocPermissionGroups', 'tagWisePermList', 'globalPermissionUsers'));
         }
-        
-        
+
+
         return view('documents.show', $dataToRet);
     }
 
@@ -284,7 +288,7 @@ class DocumentController extends Controller
             Flash::success(ucfirst(config('settings.document_label_singular')) . " Permission allouée au groupe avec succès!");
             return redirect()->back();
         }
-        
+
     }
 
     public function deletePermission($documentId, $userId)
